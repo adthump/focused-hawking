@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules/
 
 # OS / Editor temporary files
@@ -6,3 +6,7 @@ Thumbs.db
 desktop.ini
 .DS_Store
 *.log
+
+# Automated snapshots
+data/backups/*.json
+!data/backups/.gitkeep

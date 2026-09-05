@@ -76,3 +76,33 @@
 - **원클릭 엑셀 내보내기 (`.xlsx`)**: 기록된 모든 관찰 데이터를 깔끔한 한글 컬럼의 마이크로소프트 엑셀 파일로 즉시 다운로드
 - **데이터 불러오기 (Import)**: 기존에 저장해둔 엑셀 파일이나 백업 JSON 파일을 업로드하여 언제든지 복원 가능
 - **로컬 스토리지 자동 저장**: 별도 서버 없이도 사용하는 컴퓨터 브라우저에 안전하게 영구 보관
+
+---
+
+## 🤖 전용 에이전트 스킬 및 진료·분석·테스트 CLI 도구
+
+우현이의 장기 관찰 기록을 분석하고 시스템의 품질을 독립적으로 검증하기 위한 7대 전용 스킬이 탑재되어 있습니다.
+
+| 스킬명 | 역할 | 실행 명령어 |
+| :--- | :--- | :--- |
+| **`woohyun-qa-guardian`** | **종합 품질보증(QA)**: SWUT 단위시험(19종) + SWIT 통합시험(11종) | `npm test` 또는 `npm run test:unit` |
+| **`woohyun-tracker`** | **핵심 개발(Dev)**: 웹앱 UI, 폼 컴포넌트, 차트 시각화 및 서버 API | `node .agents/skills/woohyun-tracker/scripts/run_harness.js` |
+| **`hospital-consultation-report`** | **의료 브리핑**: 소아정신과 전문의 상담 리포트 자동 생성 | `node .agents/skills/hospital-consultation-report/scripts/generate_doctor_report.js --days=14` |
+| **`medication-titration-analyzer`** | **약물 적정 분석**: 약물 변경/증량 전후 집중도·리바운드 비교 분석 | `node .agents/skills/medication-titration-analyzer/scripts/compare_titration.js` |
+| **`observation-data-guardian`** | **데이터 수호자**: 관찰 데이터 무결성 검증 및 타임스탬프 스냅샷 백업 | `node .agents/skills/observation-data-guardian/scripts/verify_and_backup.js` |
+| **`local-wifi-mobile-sync`** | **모바일/네트워크**: 로컬 모바일 접속 IP 확인 및 동기화 API 점검 | `node .agents/skills/local-wifi-mobile-sync/scripts/get_mobile_qr.js` |
+| **전체 스킬 자가 진단** | 7대 스킬 문법, 규격 및 실행 무결성 전수 검사 | `node .agents/scripts/validate_all_skills.js` |
+
+---
+
+## 🧪 동작 자동 테스트 실행 방법
+
+- **CLI 실행**:
+  ```bash
+  npm test                 # 전 계층 9대 스위트 종합 검증 (1.5초)
+  npm run test:unit        # SWUT 19개 단위 시험
+  npm run test:integration # SWIT 11개 REST API 통합 시험
+  ```
+- **Windows 원클릭 실행**:
+  - `동작_자동테스트_실행.bat` 더블클릭
+

@@ -3,10 +3,10 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const PORT = 5500;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 5500;
 const BASE_DIR = __dirname;
-const DATA_DIR = path.join(BASE_DIR, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'records.json');
+const DATA_DIR = process.env.DATA_DIR || path.join(BASE_DIR, 'data');
+const DATA_FILE = process.env.DATA_FILE || path.join(DATA_DIR, 'records.json');
 
 // Ensure data directory and file exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -255,21 +255,31 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-// Bind to 0.0.0.0 for Local Wi-Fi Network Access
-server.listen(PORT, '0.0.0.0', () => {
-  const localIps = getLocalIpAddresses();
-  const primary = localIps.find(i => i.ip.startsWith('192.168.') || i.ip.startsWith('10.')) || localIps[0] || { ip: '127.0.0.1', url: `http://localhost:${PORT}` };
+function startServer(port = PORT, host = '0.0.0.0') {
+  return new Promise((resolve) => {
+    server.listen(port, host, () => {
+      const localIps = getLocalIpAddresses();
+      const primary = localIps.find(i => i.ip.startsWith('192.168.') || i.ip.startsWith('10.')) || localIps[0] || { ip: '127.0.0.1', url: `http://localhost:${port}` };
 
-  console.log('===============================================================');
-  console.log('🌟 [우현이 일일 관찰 기록표] 모바일 Wi-Fi 동기화 서버 시작!');
-  console.log('===============================================================');
-  console.log(`💻 PC 로컬 접속 주소:  http://localhost:${PORT}`);
-  console.log(`📱 스마트폰 접속 주소: ${primary.url}`);
-  console.log('---------------------------------------------------------------');
-  console.log('💡 [스마트폰 접속 방법]');
-  console.log('1. 스마트폰을 PC와 같은 집 Wi-Fi에 연결합니다.');
-  console.log(`2. 스마트폰 웹 브라우저(사파리, 크롬 등) 주소창에 ${primary.url} 입력!`);
-  console.log('3. 또는 PC 화면 상단의 [📱 핸드폰 접속 QR] 버튼을 카메라로 스캔하세요.');
-  console.log('===============================================================');
-});
+      console.log('===============================================================');
+      console.log('🌟 [우현이 일일 관찰 기록표] 모바일 Wi-Fi 동기화 서버 시작!');
+      console.log('===============================================================');
+      console.log(`💻 PC 로컬 접속 주소:  http://localhost:${port}`);
+      console.log(`📱 스마트폰 접속 주소: ${primary.url}`);
+      console.log('---------------------------------------------------------------');
+      console.log('💡 [스마트폰 접속 방법]');
+      console.log('1. 스마트폰을 PC와 같은 집 Wi-Fi에 연결합니다.');
+      console.log(`2. 스마트폰 웹 브라우저(사파리, 크롬 등) 주소창에 ${primary.url} 입력!`);
+      console.log('3. 또는 PC 화면 상단의 [📱 핸드폰 접속 QR] 버튼을 카메라로 스캔하세요.');
+      console.log('===============================================================');
+      resolve(server);
+    });
+  });
+}
+
+if (require.main === module) {
+  startServer(PORT);
+}
+
+module.exports = { server, startServer, getLocalIpAddresses, readRecords, writeRecords, MIME_TYPES, PORT };
 

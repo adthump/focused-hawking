@@ -1,4 +1,12 @@
 {
+  "name": "woohyun-tracker",
+  "version": "1.0.0",
+  "description": "우현이 일일 관찰 기록 & 변화 분석 시스템",
+  "scripts": {
+    "test": "node test/run_automated_tests.js",
+    "test:unit": "node test/unit/swut.test.js",
+    "test:integration": "node test/integration/server_api.test.js"
+  },
   "dependencies": {
     "xlsx": "^0.18.5"
   }

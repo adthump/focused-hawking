@@ -111,32 +111,37 @@ runSuite('웹 애플리케이션 (index.html) 인라인 JS 문법 및 DOM 무결
   console.log(`  ✅ [PASS] 필수 UI/DOM 컴포넌트 ${requiredIds.length}종 존재 확인 완료`);
 });
 
-// 4. Woohyun Tracker Harness
+// 4. SWVT (Software Visual & Layout Test)
+runSuite('SWVT (Software Visual & Layout Test - 시각·반응형 레이아웃 5종 시험)', () => {
+  execSync('node test/visual/swvt.test.js', { cwd: BASE_DIR, stdio: 'inherit' });
+});
+
+// 5. Woohyun Tracker Harness
 runSuite('woohyun-tracker 32개 핵심 지표 종합 하네스 검증', () => {
   execSync('node .agents/skills/woohyun-tracker/scripts/run_harness.js', { cwd: BASE_DIR, stdio: 'inherit' });
 });
 
-// 5. Data Guardian Verification & Snapshot Backup
+// 6. Data Guardian Verification & Snapshot Backup
 runSuite('observation-data-guardian 데이터 무결성 검증 및 안전 백업', () => {
   execSync('node .agents/skills/observation-data-guardian/scripts/verify_and_backup.js', { cwd: BASE_DIR, stdio: 'inherit' });
 });
 
-// 6. Hospital Consultation Report
+// 7. Hospital Consultation Report
 runSuite('hospital-consultation-report 전문의 진료 브리핑 리포트 자동 생성', () => {
   execSync('node .agents/skills/hospital-consultation-report/scripts/generate_doctor_report.js --days=7', { cwd: BASE_DIR, stdio: 'inherit' });
 });
 
-// 7. Medication Titration Analyzer
+// 8. Medication Titration Analyzer
 runSuite('medication-titration-analyzer 처방 변경 전후 비교 분석', () => {
   execSync('node .agents/skills/medication-titration-analyzer/scripts/compare_titration.js', { cwd: BASE_DIR, stdio: 'inherit' });
 });
 
-// 8. Excel Template Generator
+// 9. Excel Template Generator
 runSuite('generate_excel.js 엑셀 템플릿 생성 및 정합성 검증', () => {
   execSync('node generate_excel.js', { cwd: BASE_DIR, stdio: 'inherit' });
 });
 
-// 9. All Agent Skills Integrity Check
+// 10. All Agent Skills Integrity Check
 runSuite('전체 에이전트 스킬 규격 및 프론트매터 종합 진단', () => {
   execSync('node .agents/scripts/validate_all_skills.js', { cwd: BASE_DIR, stdio: 'inherit' });
 });

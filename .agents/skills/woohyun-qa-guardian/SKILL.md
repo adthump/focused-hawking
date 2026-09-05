@@ -1,8 +1,8 @@
 ---
 name: woohyun-qa-guardian
 description: >-
-  우현이 관찰 시스템의 소프트웨어 품질 보증(QA), SWUT 단위 시험(19종), SWIT 실동작 통합 시험(11종), 회귀 검증 및 결함 보고를 전담하는 독립 품질보증 스킬입니다.
-  기능 개발 및 코드 수정 후 전수 검증, '동작 테스트', '버그 점검', '자가 치유 검증' 요청 시 반드시 사용합니다.
+  우현이 관찰 시스템의 소프트웨어 품질 보증(QA), SWUT 단위 시험(19종), SWIT 실동작 통합 시험(11종), SWVT 시각·반응형 레이아웃 시험(5종), 회귀 검증 및 결함 보고를 전담하는 독립 품질보증 스킬입니다.
+  기능 개발 및 코드 수정 후 전수 검증, '동작 테스트', '버그 점검', '자가 치유 검증', '화면 캡처 점검' 요청 시 반드시 사용합니다.
 ---
 
 # 🛡️ 우현이 관찰 시스템 품질보증(QA) 스킬 (Woohyun QA Guardian)
@@ -40,10 +40,28 @@ SWUT 단위 시험, SWIT 통합 시험, 클라이언트 구문 무결성, 32개 
   node .agents/skills/woohyun-qa-guardian/scripts/run_swit.js
   ```
 
+### 4. SWVT (Software Visual & Layout Test) 전용 실행기
+1~5 섹션 순서 무결성, 한국어 타이포그래피(`word-break: keep-all;`), 모바일 390px 오버플로우 방어 등 시각·반응형 5종 시험을 검증합니다.
+- **실행 명령**:
+  ```bash
+  npm run test:visual
+  # 또는
+  node .agents/skills/woohyun-qa-guardian/scripts/run_swvt.js
+  ```
+
+### 5. 실기기 화면 캡처 및 오버플로우 진단기 (Visual Capture)
+Headless Chrome CDP를 통해 모바일(390x844) 및 PC(1280x1400) 화면을 캡처하고, 390px 초과 오버플로우 요소를 실시간 탐색합니다.
+- **실행 명령**:
+  ```bash
+  npm run capture:ui
+  # 또는
+  node .agents/skills/woohyun-qa-guardian/scripts/capture_ui.js
+  ```
+
 ---
 
 ## 📚 참조 문서
-- [QA 검증 체크리스트 및 시험 매트릭스](./references/qa_checklist.md): SWUT 19종 / SWIT 11종 세부 테스트 케이스 및 판정 기준
+- [QA 검증 체크리스트 및 시험 매트릭스](./references/qa_checklist.md): SWUT 19종 / SWIT 11종 / SWVT 5종 세부 테스트 케이스 및 판정 기준
 
 ---
 

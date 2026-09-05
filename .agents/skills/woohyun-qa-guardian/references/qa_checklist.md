@@ -31,3 +31,11 @@
 - **TC-IT-09**: `POST /api/records/import` 대량 동기화(배치 머지) 검증 (HTTP 200)
 - **TC-IT-10**: `DELETE /api/records/:date` 특정 날짜 삭제 (HTTP 200)
 - **TC-IT-11**: `DELETE /api/records/:date` 미존재 날짜 삭제 시 404 처리
+
+## 3. SWVT (Software Visual & Layout Test) 5종 검증 기준
+- **TC-VT-01 (섹션 순서 무결성)**: 관찰 폼 내 1~5섹션 순서(`1.처방 약물` ➔ `2.수면&식사량` ➔ `3.오후 4시 수학 집중도` ➔ `4.저녁 리바운드&감정` ➔ `5.신체 증상&메모`) 엄격 보존
+- **TC-VT-02 (한국어 타이포그래피)**: `word-break: keep-all;` 전역 스타일 적용으로 `"리바운 / 드"` 등 음절 단위 분절 결함 원천 차단
+- **TC-VT-03 (390px 모바일 안정성)**: 모바일 뷰포트 메타, `overflow-x-hidden`, 약물 2단 반응형 flex 및 컴팩트 타임피커 적용
+- **TC-VT-04 (비낙인 언어 준수)**: UI 화면 전역에서 `ADHD` 등 특정 진단명 노출 0건
+- **TC-VT-05 (DOM & 네비게이션 무결성)**: 모바일 하단 고정 4대 탭 바(`#mobile-tab-*`) 및 17개 핵심 DOM ID 보존
+

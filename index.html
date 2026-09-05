@@ -21,33 +21,227 @@
   <!-- QRCode CDN (Standard qrcodejs) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+    
+    :root {
+      --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --paper-bg: #F7F6F3;
+      --paper-surface: #FFFFFF;
+      --paper-card-sub: #FAF9F6;
+      --paper-border: #ECE7DE;
+      --paper-border-subtle: #F0ECE4;
+      --paper-text-main: #37352F;
+      --paper-text-muted: #787774;
+      --paper-text-subtle: #9B9A97;
+    }
+    
     body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      font-family: var(--font-sans);
       -webkit-tap-highlight-color: transparent;
       padding-bottom: env(safe-area-inset-bottom);
+      background-color: var(--paper-bg);
+      color: var(--paper-text-main);
+      overflow-x: hidden;
+      line-height: 1.55;
+      word-break: keep-all;
     }
-    /* Custom scrollbar */
+
+    /* Notion & Craft Paper Card System */
+    .paper-card {
+      background-color: #ffffff;
+      border: 1px solid #ECE7DE;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.015);
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .paper-card:hover {
+      border-color: #DDD8CE;
+    }
+    .paper-card-sub {
+      background-color: #FAF9F6;
+      border: 1px solid #EAE5DC;
+      border-radius: 10px;
+    }
+
+    /* Custom Scrollbar - Warm Muted */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #f1f5f9;
+      background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 4px;
+      background: #DDD9D0;
+      border-radius: 9999px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
+      background: #C4BFB5;
     }
+
+    /* Notion Style Segmented Controls */
+    .segmented-control {
+      display: flex;
+      background-color: #EFECE6;
+      border: 1px solid #E5E1D8;
+      border-radius: 8px;
+      padding: 2.5px;
+      gap: 2.5px;
+      user-select: none;
+      width: 100%;
+    }
+    .segment-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #787774;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+      border: 1px solid transparent;
+      cursor: pointer;
+      text-align: center;
+      white-space: nowrap;
+      background: transparent;
+      min-width: 0;
+    }
+    .segment-btn:hover:not(.active) {
+      background-color: rgba(255, 255, 255, 0.6);
+      color: #37352F;
+    }
+    .segment-btn.active {
+      background-color: #ffffff;
+      color: #37352F;
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      border-color: #DDD9D0;
+    }
+    .segment-btn.active.accent-emerald {
+      background-color: #EAF5ED;
+      color: #1E683B;
+      border-color: #CBE4D3;
+    }
+    .segment-btn.active.accent-amber {
+      background-color: #FEF7E6;
+      color: #91590D;
+      border-color: #FCE6B7;
+    }
+    .segment-btn.active.accent-rose {
+      background-color: #FDF0EE;
+      color: #9C2B1B;
+      border-color: #F9CBC5;
+    }
+    .segment-btn.active.accent-indigo {
+      background-color: #EEF4F9;
+      color: #1D547F;
+      border-color: #D3E4F0;
+    }
+
+    /* Mood Weather Card Buttons */
+    .mood-card-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.65rem 0.25rem;
+      border-radius: 10px;
+      border: 1px solid #ECE7DE;
+      background-color: #ffffff;
+      transition: all 0.15s ease;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      .mood-card-btn {
+        padding: 0.85rem 0.6rem;
+      }
+    }
+    .mood-card-btn:hover:not(.active) {
+      background-color: #FAF9F6;
+      border-color: #DDD8CE;
+    }
+    .mood-card-btn:active {
+      transform: scale(0.98);
+    }
+    .mood-card-btn.active {
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .mood-card-btn.active.mood-bright {
+      border-color: #E8C488;
+      background-color: #FEF9EE;
+      color: #8C5815;
+    }
+    .mood-card-btn.active.mood-calm {
+      border-color: #8DC3A0;
+      background-color: #EEF7F1;
+      color: #1D633B;
+    }
+    .mood-card-btn.active.mood-anxious {
+      border-color: #E5B581;
+      background-color: #FDF6EE;
+      color: #915112;
+    }
+    .mood-card-btn.active.mood-low {
+      border-color: #B5B2A8;
+      background-color: #F3F2EE;
+      color: #55524B;
+    }
+
+    /* Tag Chips (신체 증상) */
+    .tag-btn {
+      transition: all 0.15s ease;
+      border: 1px solid #ECE7DE;
+      background-color: #FAF9F6;
+      color: #55534E;
+      font-size: 0.75rem;
+      font-weight: 500;
+      border-radius: 7px;
+      user-select: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .tag-btn:hover:not(.active) {
+      background-color: #ffffff;
+      border-color: #DDD8CE;
+      color: #37352F;
+    }
+    .tag-btn.active {
+      background-color: #37352F;
+      color: #ffffff;
+      border-color: #37352F;
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(55, 53, 47, 0.2);
+    }
+
+    /* Form Controls Minimal Paper Feel */
+    .paper-input {
+      background-color: #ffffff;
+      border: 1px solid #E0DCD3;
+      border-radius: 8px;
+      color: #37352F;
+      font-size: 0.875rem;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .paper-input:focus {
+      outline: none;
+      border-color: #37352F;
+      box-shadow: 0 0 0 1px #37352F;
+    }
+
+    /* Print Specific Styles */
     @media print {
       @page {
         size: A4 portrait;
         margin: 8mm 10mm;
       }
-      .no-print, header, nav, #mobileFixedBottomNav, #mobileQrModal, .floating-dock {
+      .no-print, header, nav, #mobileFixedBottomNav, #mobileQrModal {
         display: none !important;
       }
       .print-only {
@@ -55,7 +249,7 @@
       }
       body {
         background: white !important;
-        color: #0f172a !important;
+        color: #1a1a1a !important;
         font-size: 11px !important;
         line-height: 1.35 !important;
         padding: 0 !important;
@@ -66,7 +260,6 @@
         padding: 0 !important;
         margin: 0 !important;
       }
-      /* When printing, hide other sections and show briefing */
       #section-record, #section-dashboard, #section-table {
         display: none !important;
       }
@@ -80,291 +273,172 @@
         break-inside: avoid;
       }
     }
-    .tag-btn.active {
-      background-color: #0f172a;
-      color: white;
-      border-color: #0f172a;
-    }
-    /* Touch optimization for mobile buttons */
-    .touch-manipulation {
-      touch-action: manipulation;
-    }
-
-    /* Calm Clinical Segmented Controls */
-    .segmented-control {
-      display: flex;
-      background-color: #f1f5f9;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.85rem;
-      padding: 3px;
-      gap: 3px;
-      user-select: none;
-    }
-    .segment-btn {
-      flex: 1;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.45rem 0.5rem;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: #64748b;
-      border-radius: 0.65rem;
-      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-      border: 1px solid transparent;
-      cursor: pointer;
-      text-align: center;
-      white-space: nowrap;
-      background: transparent;
-    }
-    .segment-btn:hover:not(.active) {
-      background-color: rgba(255, 255, 255, 0.7);
-      color: #1e293b;
-    }
-    .segment-btn.active {
-      background-color: #ffffff;
-      color: #0f172a;
-      font-weight: 700;
-      box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
-      border-color: #cbd5e1;
-    }
-
-    /* Color-coded Active Accents */
-    .segment-btn.active.accent-emerald {
-      background-color: #ecfdf5;
-      color: #065f46;
-      border-color: #a7f3d0;
-    }
-    .segment-btn.active.accent-amber {
-      background-color: #fffbeb;
-      color: #92400e;
-      border-color: #fde68a;
-    }
-    .segment-btn.active.accent-rose {
-      background-color: #fff1f2;
-      color: #9f1239;
-      border-color: #fecdd3;
-    }
-    .segment-btn.active.accent-indigo {
-      background-color: #eef2ff;
-      color: #3730a3;
-      border-color: #c7d2fe;
-    }
-
-    /* Mood Card Buttons (4-Grid Interactive Tracker) */
-    .mood-card-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 0.75rem 0.5rem;
-      border-radius: 1rem;
-      border: 1.5px solid #e2e8f0;
-      background-color: #f8fafc;
-      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      user-select: none;
-      text-align: center;
-    }
-    .mood-card-btn:hover:not(.active) {
-      background-color: #ffffff;
-      border-color: #cbd5e1;
-      transform: translateY(-1px);
-    }
-    .mood-card-btn.active {
-      background-color: #ffffff;
-      box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.08);
-      font-weight: 700;
-    }
-    .mood-card-btn.active.mood-bright {
-      border-color: #10b981;
-      background-color: #f0fdf4;
-      color: #065f46;
-    }
-    .mood-card-btn.active.mood-calm {
-      border-color: #6366f1;
-      background-color: #eef2ff;
-      color: #3730a3;
-    }
-    .mood-card-btn.active.mood-anxious {
-      border-color: #f59e0b;
-      background-color: #fffbeb;
-      color: #92400e;
-    }
-    .mood-card-btn.active.mood-low {
-      border-color: #64748b;
-      background-color: #f1f5f9;
-      color: #334155;
-    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col pb-20 md:pb-0">
+<body class="min-h-screen flex flex-col pb-24 md:pb-12 relative overflow-x-hidden">
 
-  <!-- Top Header Navigation -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-14 sm:h-16">
-        <!-- Logo & Title & Sync Badge -->
-        <div class="flex items-center space-x-2.5 sm:space-x-3">
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-900 flex items-center justify-center text-teal-400 shadow-xs shrink-0 border border-slate-800">
-            <i data-lucide="clipboard-check" class="w-5 h-5 sm:w-5 sm:h-5"></i>
-          </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <h1 class="text-base sm:text-xl font-bold text-slate-900 leading-tight tracking-tight">우현이 관찰 기록표</h1>
-              <span id="syncStatusBadge" class="hidden sm:inline-flex items-center space-x-1 text-[10px] sm:text-xs font-semibold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
-                <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
-                <span id="syncStatusText">동기화 중...</span>
-              </span>
-            </div>
-            <p class="text-[11px] sm:text-xs text-slate-500 hidden sm:block">약물 반응 · 오후 4시 집중도 · 수면 & 기분 변화 일일 관찰</p>
-          </div>
-        </div>
-
-        <!-- Navigation Tabs (Desktop) -->
-        <nav class="hidden md:flex items-center space-x-1 bg-slate-100 p-1 rounded-xl border border-slate-200/80">
-          <button onclick="switchTab('record')" id="tab-record" class="tab-btn px-3 py-1.5 text-xs sm:text-sm font-bold rounded-lg transition-all bg-white text-slate-900 shadow-xs border border-slate-200/80">
-            <i data-lucide="edit-3" class="w-3.5 h-3.5 inline-block mr-1 text-teal-600"></i>일일 기록
-          </button>
-          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-slate-600 hover:text-slate-900">
-            <i data-lucide="line-chart" class="w-3.5 h-3.5 inline-block mr-1 text-slate-400"></i>변화 분석 차트
-          </button>
-          <button onclick="switchTab('table')" id="tab-table" class="tab-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-slate-600 hover:text-slate-900">
-            <i data-lucide="table" class="w-3.5 h-3.5 inline-block mr-1 text-slate-400"></i>전체 기록표
-          </button>
-          <button onclick="switchTab('briefing')" id="tab-briefing" class="tab-btn px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-teal-700 bg-teal-50/50 hover:bg-teal-100/60 border border-teal-200/50">
-            <i data-lucide="stethoscope" class="w-3.5 h-3.5 inline-block mr-1 text-teal-600"></i>진료 브리핑
-          </button>
-        </nav>
-
-        <!-- Header Actions: Mobile QR (Desktop only), Excel Export & Import -->
-        <div class="flex items-center space-x-1.5 sm:space-x-2">
-          <!-- Mobile Connect QR Button (Desktop only, 폰에서는 숨김) -->
-          <button onclick="openMobileQrModal()" title="핸드폰(스마트폰)으로 접속하기 위한 QR 코드 및 Wi-Fi 주소 확인" class="hidden md:flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs sm:text-sm font-semibold rounded-lg border border-indigo-200 shadow-xs transition">
-            <i data-lucide="smartphone" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600"></i>
-            <span>핸드폰 접속</span>
-          </button>
-
-          <!-- Excel Download -->
-          <button onclick="exportToExcel()" title="모든 기록을 엑셀(.xlsx) 파일로 다운로드" class="flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-medium rounded-lg shadow-sm transition">
-            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-            <span class="hidden lg:inline">엑셀 다운로드</span>
-          </button>
-
-          <!-- Excel / JSON Import -->
-          <label class="flex items-center space-x-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium rounded-lg cursor-pointer transition border border-slate-300">
-            <i data-lucide="upload" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-            <span class="hidden lg:inline">불러오기</span>
-            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .json" class="hidden" onchange="importData(event)" />
-          </label>
+  <!-- Document Header & Meta Utility Bar (Notion Style) -->
+  <header class="w-full border-b border-[#EAE5DC] bg-[#F7F6F3] no-print">
+    <div class="max-w-5xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2">
+      
+      <!-- Left: Real-time Sync Status -->
+      <div class="flex items-center space-x-2 shrink-0">
+        <div id="syncStatusBadge" class="inline-flex items-center space-x-1.5 text-[11px] sm:text-xs font-medium px-2.5 py-1 rounded-full bg-[#EBF5EE] text-[#1E5638] border border-[#D0EADB] whitespace-nowrap">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
+          <span id="syncStatusText">로컬 실시간 연동 중</span>
         </div>
       </div>
+
+      <!-- Right: Utility Controls (Paper Button Style) -->
+      <div class="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+        <!-- Mobile Connect QR Button (Desktop only) -->
+        <button type="button" onclick="openMobileQrModal()" title="스마트폰 접속 QR 코드" class="hidden sm:inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-[#FAF9F6] text-[#55534E] text-xs font-medium rounded-lg border border-[#E0DCD3] transition whitespace-nowrap">
+          <i data-lucide="smartphone" class="w-3.5 h-3.5 text-[#787774]"></i>
+          <span>모바일 접속</span>
+        </button>
+
+        <!-- Excel Download -->
+        <button type="button" onclick="exportToExcel()" title="모든 기록을 엑셀 파일로 다운로드" class="inline-flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 bg-[#2D6A4F] hover:bg-[#20523C] text-white text-[11px] sm:text-xs font-medium rounded-lg transition shadow-xs whitespace-nowrap">
+          <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
+          <span>엑셀 백업</span>
+        </button>
+
+        <!-- Excel / JSON Import -->
+        <label class="inline-flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3 py-1.5 bg-white hover:bg-[#FAF9F6] text-[#55534E] text-[11px] sm:text-xs font-medium rounded-lg border border-[#E0DCD3] cursor-pointer transition whitespace-nowrap">
+          <i data-lucide="upload" class="w-3.5 h-3.5 text-[#787774]"></i>
+          <span>가져오기</span>
+          <input type="file" id="excelFileInput" accept=".xlsx, .xls, .json" class="hidden" onchange="importData(event)" />
+        </label>
+      </div>
+
     </div>
   </header>
 
-  <!-- Main Content Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <!-- Main Content Container (Notion Document Paper Layout) -->
+  <main class="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 py-5 sm:py-8 overflow-x-hidden">
+
+    <!-- Document Title & Workspace Bar -->
+    <div class="mb-6">
+      <div class="text-3xl mb-1.5 select-none">🌱</div>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#37352F]">우현이의 하루 성장 기록</h1>
+      <p class="text-xs sm:text-sm text-[#787774] mt-1">오늘 하루의 소중한 걸음과 일상 컨디션을 차분하게 관찰하고 기록하는 공간입니다.</p>
+    </div>
+
+    <!-- Notion Style Segmented Navigation Tabs -->
+    <nav class="flex items-center gap-1 bg-[#EFECE6] p-1 rounded-xl border border-[#E5E1D8] mb-6 overflow-x-auto max-w-full scrollbar-none">
+      <button onclick="switchTab('record')" id="tab-record" class="tab-btn px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-all bg-white text-[#37352F] shadow-xs border border-[#DFDBD2] flex items-center gap-1.5 whitespace-nowrap shrink-0">
+        <i data-lucide="edit-3" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
+        <span>오늘의 기록</span>
+      </button>
+      <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-3.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-[#787774] hover:text-[#37352F] flex items-center gap-1.5 whitespace-nowrap shrink-0">
+        <i data-lucide="line-chart" class="w-3.5 h-3.5 text-[#9B9A97]"></i>
+        <span>주간 성장 추이</span>
+      </button>
+      <button onclick="switchTab('table')" id="tab-table" class="tab-btn px-3.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-[#787774] hover:text-[#37352F] flex items-center gap-1.5 whitespace-nowrap shrink-0">
+        <i data-lucide="table" class="w-3.5 h-3.5 text-[#9B9A97]"></i>
+        <span>전체 기록표</span>
+      </button>
+      <button onclick="switchTab('briefing')" id="tab-briefing" class="tab-btn px-3.5 py-1.5 text-xs sm:text-sm font-medium rounded-lg transition-all text-[#787774] hover:text-[#37352F] flex items-center gap-1.5 whitespace-nowrap shrink-0">
+        <i data-lucide="stethoscope" class="w-3.5 h-3.5 text-[#9B9A97]"></i>
+        <span>정기 진료 브리핑</span>
+      </button>
+    </nav>
 
     <!-- ================================================================= -->
-    <!-- TAB 1: 📝 일일 관찰 기록 입력 폼 -->
+    <!-- TAB 1: 📝 일일 관찰 기록 입력 폼 (Notion Document Blocks) -->
     <!-- ================================================================= -->
     <section id="section-record" class="space-y-6">
       
-      <!-- Calm Clinical Date Bar & Quick Navigation -->
-      <div class="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div class="flex items-center space-x-3.5 w-full md:w-auto">
-          <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-teal-400 shrink-0">
-            <i data-lucide="calendar" class="w-5 h-5"></i>
+      <!-- Date Bar & Quick Calendar Navigator -->
+      <div class="paper-card p-4 sm:p-5 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#55534E] flex items-center justify-center shrink-0">
+            <i data-lucide="calendar" class="w-4 h-4"></i>
           </div>
           <div>
-            <div class="text-[11px] font-semibold text-slate-400 flex items-center gap-1.5">
-              <span>관찰 일자 선택</span>
-              <span class="w-1 h-1 rounded-full bg-slate-600"></span>
-              <span class="text-slate-500 text-[10px]">컴퓨터 자동 날짜 연동</span>
-            </div>
-            <div class="flex items-center space-x-2.5 mt-0.5">
-              <input type="date" id="recordDate" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-base sm:text-lg px-3 py-1 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition cursor-pointer [color-scheme:dark]" onchange="onDateChanged()" />
-              <span id="dayOfWeekBadge" class="px-2.5 py-1 bg-slate-800 text-teal-300 text-xs sm:text-sm font-semibold rounded-xl border border-slate-700">수요일</span>
+            <div class="text-[11px] font-semibold text-[#787774] uppercase tracking-wider">관찰 일자</div>
+            <div class="flex items-center space-x-2 mt-0.5">
+              <input type="date" id="recordDate" class="paper-input font-bold text-sm sm:text-base px-2.5 py-1" onchange="onDateChanged()" />
+              <span id="dayOfWeekBadge" class="px-2.5 py-1 bg-[#FAF9F6] text-[#55534E] text-xs font-semibold rounded-md border border-[#EAE5DC] whitespace-nowrap">수요일</span>
             </div>
           </div>
         </div>
 
-        <!-- Quick Date Navigator & Status Indicator -->
-        <div class="flex items-center space-x-2 w-full md:w-auto justify-between md:justify-end">
-          <div class="flex items-center space-x-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
-            <button type="button" onclick="changeDateByDays(-1)" class="p-1.5 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition" title="어제">
-              <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        <!-- Quick Date Navigator Buttons -->
+        <div class="flex items-center justify-between md:justify-end gap-2 flex-wrap">
+          <div class="flex items-center space-x-1 bg-[#FAF9F6] p-1 rounded-lg border border-[#ECE7DE] shrink-0">
+            <button type="button" onclick="changeDateByDays(-1)" class="px-2.5 py-1 hover:bg-white text-[#55534E] text-xs font-medium rounded-md transition whitespace-nowrap" title="어제">
+              <i data-lucide="chevron-left" class="w-3.5 h-3.5 inline"></i>
+              <span>어제</span>
             </button>
-            <button type="button" onclick="setToday()" class="px-2.5 py-1 text-xs font-semibold hover:bg-slate-700 text-slate-200 rounded-lg transition">
+            <button type="button" onclick="setToday()" class="px-2.5 py-1 bg-white hover:bg-[#F2EFE9] text-[#2D6A4F] text-xs font-semibold rounded-md shadow-2xs transition whitespace-nowrap">
               오늘
             </button>
-            <button type="button" onclick="changeDateByDays(1)" class="p-1.5 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg transition" title="내일">
-              <i data-lucide="chevron-right" class="w-4 h-4"></i>
+            <button type="button" onclick="changeDateByDays(1)" class="px-2.5 py-1 hover:bg-white text-[#55534E] text-xs font-medium rounded-md transition whitespace-nowrap" title="내일">
+              <span>내일</span>
+              <i data-lucide="chevron-right" class="w-3.5 h-3.5 inline"></i>
             </button>
           </div>
-          <div id="recordStatusBadge" class="text-xs px-3 py-1.5 rounded-full font-semibold bg-teal-500/20 text-teal-300 border border-teal-500/30 flex items-center space-x-1.5">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+          <div id="recordStatusBadge" class="text-xs px-2.5 py-1 rounded-md font-medium bg-[#EBF5EE] text-[#1E5638] border border-[#D0EADB] flex items-center space-x-1 shrink-0 whitespace-nowrap">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#2E7D32]"></i>
             <span>새 기록 작성 중</span>
           </div>
         </div>
       </div>
 
-      <!-- Main Form Grid: 2-Column Bento Grid on Desktop -->
+      <!-- Main Form Blocks -->
       <form id="observationForm" onsubmit="saveRecord(event)" class="space-y-6">
         
-        <!-- BENTO ROW 1 & 2: 2-Columns Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <!-- ROW 1 (2-Columns Grid): 1. 처방 약물 & 복용 순응도 + 2. 수면 & 식사량 밸런스 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
           
-          <!-- BENTO CELL 1: 💊 1. 투약 바이탈 허브 -->
-          <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 transition-all hover:shadow-md flex flex-col justify-between">
+          <!-- CARD 1: 💊 1. 처방 약물 & 복용 순응도 -->
+          <div class="paper-card p-5 sm:p-6 flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+              <div class="flex items-center justify-between pb-3 border-b border-[#F0ECE4] mb-4 gap-2">
                 <div class="flex items-center space-x-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-slate-900 text-teal-400 flex items-center justify-center font-bold text-xs shadow-xs">
-                    <i data-lucide="pill" class="w-4 h-4"></i>
+                  <div class="w-8 h-8 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#37352F] flex items-center justify-center font-bold text-sm shrink-0">
+                    <i data-lucide="pill" class="w-4 h-4 text-[#2D6A4F]"></i>
                   </div>
                   <div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">1. 💊 처방 약물 & 복용 순응도</h2>
-                    <p class="text-[11px] text-slate-400">약물 종류, 정밀 용량 및 복용 시간대 (다중 투약 추적)</p>
+                    <h2 class="text-base font-bold text-[#37352F]">1. 💊 처방 약물 & 복용 순응도</h2>
+                    <p class="text-xs text-[#787774]">약물 종류, 정밀 용량 및 복용 시간대 (다중 투약 추적)</p>
                   </div>
                 </div>
-                <span class="text-xs text-teal-700 bg-teal-50 border border-teal-200/60 px-2.5 py-1 rounded-full font-semibold">다중 투약 지원</span>
+                <span class="text-xs text-[#55534E] bg-[#FAF9F6] border border-[#ECE7DE] px-2.5 py-0.5 rounded-full font-medium shrink-0 whitespace-nowrap">다중 투약</span>
               </div>
 
-              <!-- Medicine List Container (Dynamic Multiple Medicines) -->
+              <!-- Medicine List Container -->
               <div class="space-y-3">
-                <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">
-                  약 종류 및 용량 <span class="text-rose-500">*</span>
-                </label>
-                <div id="medicineList" class="space-y-2.5">
+                <div id="medicineList" class="space-y-3">
                   <!-- Dynamically populated medicine rows -->
                 </div>
                 
-                <button type="button" onclick="addMedicineRow()" class="mt-2 inline-flex items-center space-x-1.5 text-xs font-bold text-slate-800 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3.5 py-2.5 rounded-xl transition border border-slate-200 w-full justify-center">
-                  <i data-lucide="plus-circle" class="w-4 h-4 text-teal-600"></i>
+                <button type="button" onclick="addMedicineRow()" class="mt-2 inline-flex items-center space-x-1.5 text-xs font-semibold text-[#55534E] hover:text-[#37352F] bg-[#FAF9F6] hover:bg-[#F2EFE9] px-4 py-2.5 rounded-lg transition border border-dashed border-[#DDD8CE] w-full justify-center">
+                  <i data-lucide="plus" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
                   <span>+ 약 추가 (메디키넷, 콘서타, 아빌리파이 등 동시 복용 시 클릭)</span>
                 </button>
               </div>
             </div>
 
             <!-- Dosage Timing & Condition -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5 pt-4 border-t border-slate-100">
-              <div class="bg-slate-50/70 p-3 rounded-2xl border border-slate-200/70">
-                <label class="block text-[11px] font-bold text-slate-500 mb-1.5">투약 시간</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5 pt-4 border-t border-[#F0ECE4]">
+              <div class="bg-[#FAF9F6] p-3 rounded-xl border border-[#ECE7DE]">
+                <label class="block text-[11px] font-semibold text-[#787774] mb-1.5">투약 시간</label>
                 <div class="flex items-center space-x-1.5">
-                  <select id="medTimePeriod" class="bg-white border border-slate-200 text-slate-700 text-xs rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-slate-500 focus:outline-none">
+                  <select id="medTimePeriod" class="paper-input text-xs font-medium px-2 py-1">
                     <option value="오전" selected>오전</option>
                     <option value="오후">오후</option>
                   </select>
-                  <input type="text" id="medTimeHour" placeholder="08" value="08" class="w-12 bg-white border border-slate-200 text-slate-800 text-xs rounded-lg px-1.5 py-1.5 text-center font-bold focus:ring-2 focus:ring-slate-500 focus:outline-none" />
-                  <span class="text-slate-400 font-bold">:</span>
-                  <input type="text" id="medTimeMinute" placeholder="30" value="30" class="w-12 bg-white border border-slate-200 text-slate-800 text-xs rounded-lg px-1.5 py-1.5 text-center font-bold focus:ring-2 focus:ring-slate-500 focus:outline-none" />
+                  <input type="text" id="medTimeHour" placeholder="08" value="08" class="paper-input w-12 text-xs py-1 text-center font-mono font-bold" />
+                  <span class="text-[#9B9A97] font-bold">:</span>
+                  <input type="text" id="medTimeMinute" placeholder="30" value="30" class="paper-input w-12 text-xs py-1 text-center font-mono font-bold" />
                 </div>
               </div>
 
-              <div class="bg-slate-50/70 p-3 rounded-2xl border border-slate-200/70">
-                <label class="block text-[11px] font-bold text-slate-500 mb-1.5">식전 / 식후 여부</label>
-                <select id="medMealTiming" class="w-full bg-white border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 py-1.5 font-medium focus:ring-2 focus:ring-slate-500 focus:outline-none">
+              <div class="bg-[#FAF9F6] p-3 rounded-xl border border-[#ECE7DE]">
+                <label class="block text-[11px] font-semibold text-[#787774] mb-1.5">식전 / 식후 여부</label>
+                <select id="medMealTiming" class="paper-input w-full text-xs py-1.5 font-medium">
                   <option value="식후 30분">식후 30분 (권장)</option>
                   <option value="식후 즉시">식후 즉시</option>
                   <option value="식전 30분">식전 30분</option>
@@ -374,72 +448,72 @@
               </div>
 
               <div class="sm:col-span-2">
-                <input type="text" id="medNote" placeholder="투약 메모 (선택: 물 충분히 섭취, 간식 후 복용 등)" class="w-full bg-slate-50/70 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-slate-500 focus:outline-none" />
+                <input type="text" id="medNote" placeholder="투약 메모 (선택: 물 충분히 섭취, 간식 후 복용 등)" class="paper-input w-full px-3 py-2 text-xs" />
               </div>
             </div>
           </div>
 
-          <!-- BENTO CELL 2: 🌙 2. 수면 & 점심 식욕 부진 모니터링 -->
-          <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 transition-all hover:shadow-md flex flex-col justify-between">
+          <!-- CARD 2: 🌙 2. 수면 & 식사량 밸런스 모니터링 -->
+          <div class="paper-card p-5 sm:p-6 flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+              <div class="flex items-center justify-between pb-3 border-b border-[#F0ECE4] mb-4 gap-2">
                 <div class="flex items-center space-x-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-slate-900 text-indigo-300 flex items-center justify-center font-bold text-xs shadow-xs">
-                    <i data-lucide="moon" class="w-4 h-4"></i>
+                  <div class="w-8 h-8 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#37352F] flex items-center justify-center font-bold text-sm shrink-0">
+                    <i data-lucide="moon" class="w-4 h-4 text-[#1C4E80]"></i>
                   </div>
                   <div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">2. 🌙 수면 & 점심 식욕 부진 모니터링</h2>
-                    <p class="text-[11px] text-slate-400">약효 피크 점심 식사량 감소 & 야간 입면 지연 추적</p>
+                    <h2 class="text-base font-bold text-[#37352F]">2. 🌙 수면 & 식사량 밸런스</h2>
+                    <p class="text-xs text-[#787774]">취침·기상 생체 리듬 및 점심 식욕 추적</p>
                   </div>
                 </div>
-                <span class="text-xs text-indigo-700 bg-indigo-50 border border-indigo-200/60 font-semibold px-2.5 py-1 rounded-full">주요 부작용</span>
+                <span class="text-xs text-[#55534E] bg-[#FAF9F6] border border-[#ECE7DE] px-2.5 py-0.5 rounded-full font-medium shrink-0 whitespace-nowrap">생체 리듬</span>
               </div>
 
-              <!-- Sleep Pattern Sub-grid -->
+              <!-- Sleep Sub-grid -->
               <div class="mb-5">
-                <div class="grid grid-cols-2 gap-2.5 mb-3">
+                <div class="grid grid-cols-2 gap-3 mb-3">
                   <!-- Wake up time -->
-                  <div class="bg-slate-50/70 p-2.5 rounded-2xl border border-slate-200/70">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">기상 시간</span>
+                  <div class="bg-[#FAF9F6] p-2.5 sm:p-3 rounded-xl border border-[#ECE7DE]">
+                    <span class="text-[11px] font-semibold text-[#787774] block mb-1">기상 시간</span>
                     <div class="flex items-center space-x-1">
-                      <select id="wakePeriod" class="bg-white border border-slate-200 text-xs rounded-md px-1.5 py-1">
+                      <select id="wakePeriod" class="paper-input text-xs px-1 sm:px-1.5 py-1 shrink-0">
                         <option value="오전" selected>오전</option>
                         <option value="오후">오후</option>
                       </select>
-                      <input type="text" id="wakeHour" value="07" class="w-9 text-center bg-white border border-slate-200 text-xs font-bold rounded-md py-1" />
-                      <span class="text-slate-300 font-bold">:</span>
-                      <input type="text" id="wakeMinute" value="30" class="w-9 text-center bg-white border border-slate-200 text-xs font-bold rounded-md py-1" />
+                      <input type="text" id="wakeHour" value="07" class="paper-input w-8 sm:w-10 text-center text-xs font-mono font-bold py-1 px-0.5" />
+                      <span class="text-[#9B9A97]">:</span>
+                      <input type="text" id="wakeMinute" value="30" class="paper-input w-8 sm:w-10 text-center text-xs font-mono font-bold py-1 px-0.5" />
                     </div>
                   </div>
 
                   <!-- Sleep time -->
-                  <div class="bg-slate-50/70 p-2.5 rounded-2xl border border-slate-200/70">
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">취침 시간</span>
+                  <div class="bg-[#FAF9F6] p-2.5 sm:p-3 rounded-xl border border-[#ECE7DE]">
+                    <span class="text-[11px] font-semibold text-[#787774] block mb-1">취침 시간</span>
                     <div class="flex items-center space-x-1">
-                      <select id="sleepPeriod" class="bg-white border border-slate-200 text-xs rounded-md px-1.5 py-1">
+                      <select id="sleepPeriod" class="paper-input text-xs px-1 sm:px-1.5 py-1 shrink-0">
                         <option value="오후" selected>오후</option>
                         <option value="오전">오전</option>
                       </select>
-                      <input type="text" id="sleepHour" value="10" class="w-9 text-center bg-white border border-slate-200 text-xs font-bold rounded-md py-1" />
-                      <span class="text-slate-300 font-bold">:</span>
-                      <input type="text" id="sleepMinute" value="30" class="w-9 text-center bg-white border border-slate-200 text-xs font-bold rounded-md py-1" />
+                      <input type="text" id="sleepHour" value="10" class="paper-input w-8 sm:w-10 text-center text-xs font-mono font-bold py-1 px-0.5" />
+                      <span class="text-[#9B9A97]">:</span>
+                      <input type="text" id="sleepMinute" value="30" class="paper-input w-8 sm:w-10 text-center text-xs font-mono font-bold py-1 px-0.5" />
                     </div>
                   </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2.5">
+                <div class="grid grid-cols-2 gap-3">
                   <div>
-                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">입면 지연</label>
-                    <select id="sleepLatency" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-2.5 py-1.5 font-medium focus:ring-2 focus:ring-slate-500 focus:outline-none">
+                    <label class="block text-[11px] font-semibold text-[#787774] mb-1">입면 지연</label>
+                    <select id="sleepLatency" class="paper-input w-full text-xs py-1.5 font-medium">
                       <option value="15분 이내 (원활)">15분 이내 (원활)</option>
                       <option value="15~30분 (보통)">15~30분 (보통)</option>
                       <option value="30분~1시간 (지연)">30분~1시간 (지연)</option>
-                      <option value="1시간 이상 (불면/어려움)">1시간 이상 (불면/어려움)</option>
+                      <option value="1시간 이상 (불면/어려움)">1시간 이상 (어려움)</option>
                     </select>
                   </div>
                   <div>
-                    <label class="block text-[11px] font-semibold text-slate-500 mb-1">수면 중 깸</label>
-                    <select id="sleepWaking" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-2.5 py-1.5 font-medium focus:ring-2 focus:ring-slate-500 focus:outline-none">
+                    <label class="block text-[11px] font-semibold text-[#787774] mb-1">수면 중 깸</label>
+                    <select id="sleepWaking" class="paper-input w-full text-xs py-1.5 font-medium">
                       <option value="없음 (숙면)">없음 (숙면)</option>
                       <option value="1회 (화장실/물 등)">1회 (화장실/물 등)</option>
                       <option value="2~3회 (뒤척임)">2~3회 (뒤척임)</option>
@@ -451,18 +525,18 @@
             </div>
 
             <!-- Meals Section with Segmented Controls -->
-            <div class="pt-4 border-t border-slate-100 space-y-2.5">
+            <div class="pt-4 border-t border-[#F0ECE4] space-y-2">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-600 flex items-center gap-1.5">
-                  <i data-lucide="utensils" class="w-3.5 h-3.5 text-teal-600"></i>
+                <span class="text-xs font-bold text-[#37352F] flex items-center gap-1.5">
+                  <i data-lucide="utensils" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
                   <span>식사량 (원터치 체크)</span>
                 </span>
-                <span class="text-[10px] text-slate-400">정상 / 70% / 거의안먹음</span>
+                <span class="text-[11px] text-[#787774]">정상 / 70% / 거의안먹음</span>
               </div>
               
               <!-- Breakfast Row -->
-              <div class="flex items-center justify-between gap-2 bg-slate-50/70 p-2 rounded-xl border border-slate-200/70">
-                <span class="text-xs font-bold text-slate-700 w-16 shrink-0">🍳 아침</span>
+              <div class="flex items-center justify-between gap-2 bg-[#FAF9F6] p-2 rounded-xl border border-[#ECE7DE]">
+                <span class="text-xs font-semibold text-[#55534E] min-w-[76px] shrink-0 whitespace-nowrap">🍳 아침</span>
                 <input type="hidden" id="mealBreakfast" value="정상" />
                 <div class="segmented-control flex-1" role="group" aria-label="아침 식사량">
                   <button type="button" onclick="setSegmentValue('mealBreakfast', '정상')" data-segment-for="mealBreakfast" data-segment-val="정상" class="segment-btn active accent-emerald">정상</button>
@@ -472,8 +546,11 @@
               </div>
 
               <!-- Lunch Row (Peak) -->
-              <div class="flex items-center justify-between gap-2 bg-slate-50/70 p-2 rounded-xl border border-slate-200/70">
-                <span class="text-xs font-bold text-slate-700 w-16 shrink-0">🍱 점심 <span class="text-[9px] text-teal-600 block font-normal">피크</span></span>
+              <div class="flex items-center justify-between gap-2 bg-[#FAF9F6] p-2 rounded-xl border border-[#ECE7DE]">
+                <span class="text-xs font-semibold text-[#55534E] min-w-[76px] shrink-0 whitespace-nowrap flex items-center gap-1">
+                  <span>🍱 점심</span>
+                  <span class="text-[10px] text-[#1E5638] font-bold bg-[#EBF5EE] px-1 py-0.5 rounded leading-none">피크</span>
+                </span>
                 <input type="hidden" id="mealLunch" value="정상" />
                 <div class="segmented-control flex-1" role="group" aria-label="점심 식사량">
                   <button type="button" onclick="setSegmentValue('mealLunch', '정상')" data-segment-for="mealLunch" data-segment-val="정상" class="segment-btn active accent-emerald">정상</button>
@@ -483,8 +560,8 @@
               </div>
 
               <!-- Dinner Row -->
-              <div class="flex items-center justify-between gap-2 bg-slate-50/70 p-2 rounded-xl border border-slate-200/70">
-                <span class="text-xs font-bold text-slate-700 w-16 shrink-0">🍲 저녁</span>
+              <div class="flex items-center justify-between gap-2 bg-[#FAF9F6] p-2 rounded-xl border border-[#ECE7DE]">
+                <span class="text-xs font-semibold text-[#55534E] min-w-[76px] shrink-0 whitespace-nowrap">🍲 저녁</span>
                 <input type="hidden" id="mealDinner" value="정상" />
                 <div class="segmented-control flex-1" role="group" aria-label="저녁 식사량">
                   <button type="button" onclick="setSegmentValue('mealDinner', '정상')" data-segment-for="mealDinner" data-segment-val="정상" class="segment-btn active accent-emerald">정상</button>
@@ -495,318 +572,361 @@
             </div>
           </div>
 
-          <!-- BENTO CELL 3: 🎯 3. 약효 피크 평가: 오후 4시 수학 집중도 -->
-          <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 transition-all hover:shadow-md flex flex-col justify-between">
+        </div>
+
+        <!-- ROW 2 (2-Columns Grid): 3. 오후 4시 수학 집중도 + 4. 감정 날씨 & 저녁 리바운드 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+
+          <!-- CARD 3: 🎯 3. 약효 피크 평가: 오후 4시 수학 집중도 -->
+          <div class="paper-card p-5 sm:p-6 flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+              <div class="flex items-center justify-between pb-3 border-b border-[#F0ECE4] mb-4 gap-2">
                 <div class="flex items-center space-x-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center font-bold text-xs shadow-xs">
-                    <i data-lucide="target" class="w-4 h-4"></i>
+                  <div class="w-8 h-8 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#37352F] flex items-center justify-center font-bold text-sm shrink-0">
+                    <i data-lucide="target" class="w-4 h-4 text-[#D97706]"></i>
                   </div>
                   <div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">3. 🎯 약효 피크 평가: 오후 4시 수학 집중도</h2>
-                    <p class="text-[11px] text-slate-400">최대 약효 시간대 과제 몰입 지속 분, 풀이량 & 자발 시작도</p>
+                    <h2 class="text-base font-bold text-[#37352F]">3. 🎯 약효 피크 평가: 오후 4시 수학 집중도</h2>
+                    <p class="text-xs text-[#787774]">최대 약효 시간대 과제 몰입 지속 시간, 풀이량 & 자발 시작도</p>
                   </div>
                 </div>
-                <span class="text-xs text-amber-800 bg-amber-50 border border-amber-200/60 font-semibold px-2.5 py-1 rounded-full">약효 피크 지표</span>
+                <span class="text-xs text-[#8C5815] bg-[#FEF9EE] border border-[#FCE6B7] px-2.5 py-0.5 rounded-full font-semibold shrink-0 whitespace-nowrap">약효 피크 지표</span>
               </div>
 
-              <!-- Hero Metrics Grid (Large Visual Counters) -->
-              <div class="grid grid-cols-2 gap-3 mb-4">
-                <!-- Focus Duration Hero Widget -->
-                <div class="bg-gradient-to-br from-teal-50/80 to-emerald-50/60 p-4 rounded-2xl border border-teal-200/80 text-center">
-                  <span class="text-[11px] font-bold text-teal-800 uppercase tracking-wider block mb-1">지속 집중 시간 (몰입)</span>
-                  <div class="flex items-baseline justify-center space-x-1">
-                    <input type="number" id="mathFocusDuration" min="0" max="9999" placeholder="20" value="20" class="w-20 bg-transparent text-slate-900 text-3xl font-extrabold text-center focus:outline-none focus:ring-0" />
-                    <span class="text-sm font-bold text-teal-700">분</span>
+              <!-- Metrics Inputs -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                <!-- Focus Duration Tile -->
+                <div class="bg-[#FAF9F6] p-3.5 sm:p-4 rounded-xl border border-[#ECE7DE] text-center flex flex-col justify-between">
+                  <span class="text-[11px] font-semibold text-[#787774] block mb-1">⏱️ 지속 집중 시간 (몰입)</span>
+                  <div class="flex items-baseline justify-center space-x-1 my-1">
+                    <input type="number" id="mathFocusDuration" min="0" max="9999" placeholder="20" value="20" class="w-20 bg-transparent text-[#245340] text-3xl font-bold font-mono tracking-tight text-center focus:outline-none" />
+                    <span class="text-sm font-bold text-[#245340]">분</span>
                   </div>
-                  <span class="text-[10px] text-teal-600/90 font-medium mt-0.5 block">딴짓 없이 풀이에 전념</span>
+                  <!-- Step Quick Chips -->
+                  <div class="flex flex-wrap justify-center gap-1 mt-2">
+                    <button type="button" onclick="document.getElementById('mathFocusDuration').value = Math.max(0, (parseInt(document.getElementById('mathFocusDuration').value)||0) - 5)" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">-5분</button>
+                    <button type="button" onclick="document.getElementById('mathFocusDuration').value = (parseInt(document.getElementById('mathFocusDuration').value)||0) + 5" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">+5분</button>
+                    <button type="button" onclick="document.getElementById('mathFocusDuration').value = 15" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">15분</button>
+                    <button type="button" onclick="document.getElementById('mathFocusDuration').value = 25" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">25분</button>
+                    <button type="button" onclick="document.getElementById('mathFocusDuration').value = 30" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">30분</button>
+                  </div>
                 </div>
 
-                <!-- Problems Solved Widget -->
-                <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 text-center">
-                  <span class="text-[11px] font-bold text-slate-600 uppercase tracking-wider block mb-1">푼 문제 / 소요 시간</span>
-                  <div class="flex items-baseline justify-center space-x-1">
-                    <input type="number" id="mathProblemCount" min="0" max="9999" placeholder="20" value="20" class="w-16 bg-transparent text-slate-900 text-3xl font-extrabold text-center focus:outline-none focus:ring-0" />
-                    <span class="text-xs font-bold text-slate-400">문제</span>
-                    <span class="text-slate-300 font-light mx-1">/</span>
-                    <input type="number" id="mathTotalDuration" min="0" max="9999" placeholder="30" value="30" class="w-12 bg-transparent text-slate-600 text-xl font-bold text-center focus:outline-none focus:ring-0" />
-                    <span class="text-xs font-bold text-slate-400">분</span>
+                <!-- Problems Solved & Total Duration Tile -->
+                <div class="bg-[#FAF9F6] p-3.5 sm:p-4 rounded-xl border border-[#ECE7DE] text-center flex flex-col justify-between">
+                  <span class="text-[11px] font-semibold text-[#787774] block mb-1">📚 푼 문제 수 / 총 소요 시간</span>
+                  <div class="flex items-baseline justify-center space-x-1 my-1">
+                    <input type="number" id="mathProblemCount" min="0" max="9999" placeholder="20" value="20" class="w-14 bg-transparent text-[#37352F] text-3xl font-bold font-mono tracking-tight text-center focus:outline-none" />
+                    <span class="text-xs font-medium text-[#787774]">문제</span>
+                    <span class="text-[#DDD9D0] font-light mx-1">/</span>
+                    <input type="number" id="mathTotalDuration" min="0" max="9999" placeholder="30" value="30" class="w-12 bg-transparent text-[#787774] text-xl font-bold font-mono text-center focus:outline-none" />
+                    <span class="text-xs font-medium text-[#787774]">분</span>
                   </div>
-                  <span class="text-[10px] text-slate-400 font-medium mt-0.5 block">전체 풀이량 및 총 시간</span>
+                  <!-- Step Quick Chips -->
+                  <div class="flex flex-wrap justify-center gap-1 mt-2">
+                    <button type="button" onclick="document.getElementById('mathProblemCount').value = Math.max(0, (parseInt(document.getElementById('mathProblemCount').value)||0) - 1)" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">-1</button>
+                    <button type="button" onclick="document.getElementById('mathProblemCount').value = (parseInt(document.getElementById('mathProblemCount').value)||0) + 1" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">+1</button>
+                    <button type="button" onclick="document.getElementById('mathProblemCount').value = 10" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">10개</button>
+                    <button type="button" onclick="document.getElementById('mathProblemCount').value = 20" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">20개</button>
+                    <button type="button" onclick="document.getElementById('mathProblemCount').value = 30" class="px-1.5 py-0.5 text-[11px] bg-white hover:bg-[#EFECE6] border border-[#ECE7DE] rounded text-[#55534E] whitespace-nowrap">30개</button>
+                  </div>
                 </div>
               </div>
 
               <!-- Task Start & Distraction Controls -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5">과제 시작 반응</label>
+              <div class="space-y-2.5 mb-3">
+                <div class="bg-[#FAF9F6] p-2.5 rounded-xl border border-[#ECE7DE]">
+                  <label class="block text-[11px] font-semibold text-[#55534E] mb-1">과제 시작 반응</label>
                   <input type="hidden" id="taskStartReaction" value="스스로 시작" />
                   <div class="segmented-control" role="group" aria-label="과제 시작 반응">
-                    <button type="button" onclick="setSegmentValue('taskStartReaction', '스스로 시작')" data-segment-for="taskStartReaction" data-segment-val="스스로 시작" class="segment-btn active accent-indigo">스스로 시작</button>
-                    <button type="button" onclick="setSegmentValue('taskStartReaction', '가벼운 독려')" data-segment-for="taskStartReaction" data-segment-val="가벼운 독려" class="segment-btn accent-amber">가벼운 독려</button>
-                    <button type="button" onclick="setSegmentValue('taskStartReaction', '심한 거부')" data-segment-for="taskStartReaction" data-segment-val="심한 거부" class="segment-btn accent-rose">심한 거부</button>
+                    <button type="button" onclick="setSegmentValue('taskStartReaction', '스스로 시작')" data-segment-for="taskStartReaction" data-segment-val="스스로 시작" class="segment-btn active accent-emerald whitespace-nowrap">스스로 시작</button>
+                    <button type="button" onclick="setSegmentValue('taskStartReaction', '가벼운 독려')" data-segment-for="taskStartReaction" data-segment-val="가벼운 독려" class="segment-btn accent-amber whitespace-nowrap">가벼운 독려</button>
+                    <button type="button" onclick="setSegmentValue('taskStartReaction', '심한 거부')" data-segment-for="taskStartReaction" data-segment-val="심한 거부" class="segment-btn accent-rose whitespace-nowrap">심한 거부</button>
                   </div>
                 </div>
 
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5">주의 분산 횟수</label>
+                <div class="bg-[#FAF9F6] p-2.5 rounded-xl border border-[#ECE7DE]">
+                  <label class="block text-[11px] font-semibold text-[#55534E] mb-1">주의 분산 횟수</label>
                   <input type="hidden" id="distractionLevel" value="적음" />
                   <div class="segmented-control" role="group" aria-label="주의 분산 횟수">
-                    <button type="button" onclick="setSegmentValue('distractionLevel', '적음')" data-segment-for="distractionLevel" data-segment-val="적음" class="segment-btn active accent-emerald">적음 (1~2회)</button>
-                    <button type="button" onclick="setSegmentValue('distractionLevel', '보통')" data-segment-for="distractionLevel" data-segment-val="보통" class="segment-btn accent-amber">보통 (3~5회)</button>
-                    <button type="button" onclick="setSegmentValue('distractionLevel', '잦음')" data-segment-for="distractionLevel" data-segment-val="잦음" class="segment-btn accent-rose">잦음 (6회↑)</button>
+                    <button type="button" onclick="setSegmentValue('distractionLevel', '적음')" data-segment-for="distractionLevel" data-segment-val="적음" class="segment-btn active accent-emerald whitespace-nowrap">적음 (1~2회)</button>
+                    <button type="button" onclick="setSegmentValue('distractionLevel', '보통')" data-segment-for="distractionLevel" data-segment-val="보통" class="segment-btn accent-amber whitespace-nowrap">보통 (3~5회)</button>
+                    <button type="button" onclick="setSegmentValue('distractionLevel', '잦음')" data-segment-for="distractionLevel" data-segment-val="잦음" class="segment-btn accent-rose whitespace-nowrap">잦음 (6회↑)</button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="pt-3 border-t border-slate-100">
-              <input type="text" id="mathObservationMemo" placeholder="수학 테스트 상세 관찰 메모 (선택: 초반 몰입도, 연산 속도 등)" class="w-full bg-slate-50/70 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-slate-500 focus:outline-none" />
+            <div class="pt-3 border-t border-[#F0ECE4]">
+              <input type="text" id="mathObservationMemo" placeholder="수학 테스트 세부 메모 (선택: 문제 난이도, 초기 몰입 속도 등)" class="paper-input w-full px-3 py-2 text-xs" />
             </div>
           </div>
 
-          <!-- BENTO CELL 4: ⚡ 4. 약효 소진기: 저녁 리바운드 & 감정 변화 -->
-          <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 transition-all hover:shadow-md flex flex-col justify-between">
+          <!-- CARD 4: ⚡ 4. 약효 소진기: 저녁 리바운드 & 감정 날씨 -->
+          <div class="paper-card p-5 sm:p-6 flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+              <div class="flex items-center justify-between pb-3 border-b border-[#F0ECE4] mb-4 gap-2">
                 <div class="flex items-center space-x-2.5">
-                  <div class="w-8 h-8 rounded-xl bg-slate-900 text-rose-400 flex items-center justify-center font-bold text-xs shadow-xs">
-                    <i data-lucide="heart" class="w-4 h-4"></i>
+                  <div class="w-8 h-8 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#37352F] flex items-center justify-center font-bold text-sm shrink-0">
+                    <i data-lucide="heart" class="w-4 h-4 text-[#B85D3B]"></i>
                   </div>
                   <div>
-                    <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">4. ⚡ 약효 소진기: 저녁 리바운드 & 감정 변화</h2>
-                    <p class="text-[11px] text-slate-400">저녁 약효 소진 시 급격한 짜증/반동 및 감정 기복 추적</p>
+                    <h2 class="text-base font-bold text-[#37352F]">4. ⚡ 약효 소진기: 저녁 리바운드 & 감정 날씨</h2>
+                    <p class="text-xs text-[#787774]">약효 소진 시 감정 기복 및 당일 심리 상태</p>
                   </div>
                 </div>
-                <span class="text-xs text-rose-700 bg-rose-50 border border-rose-200/60 font-semibold px-2.5 py-1 rounded-full">소진기 리바운드</span>
+                <span class="text-xs text-[#55534E] bg-[#FAF9F6] border border-[#ECE7DE] px-2.5 py-0.5 rounded-full font-medium shrink-0 whitespace-nowrap">정서 안녕</span>
               </div>
 
-              <!-- Overall Mood Tracker (Interactive 4-Card Grid) -->
-              <div class="mb-5">
+              <!-- Overall Mood Tracker (Craft Paper Cards 4-Grid) -->
+              <div class="mb-4">
                 <div class="flex items-center justify-between mb-2">
-                  <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">전반적인 기분</label>
-                  <span class="text-[10px] text-slate-400">당일 주된 감정 톤</span>
+                  <label class="block text-xs font-bold text-[#37352F]">하루 전반적인 감정 날씨</label>
+                  <span class="text-[11px] text-[#787774]">가장 주된 기분 선택</span>
                 </div>
                 <input type="hidden" id="overallMood" value="평온" />
                 <div class="grid grid-cols-4 gap-2" role="group" aria-label="전반적인 기분">
-                  <button type="button" onclick="setSegmentValue('overallMood', '밝음')" data-segment-for="overallMood" data-segment-val="밝음" class="mood-card-btn mood-bright py-2.5 px-1">
-                    <span class="text-xl mb-0.5 select-none">😊</span>
-                    <span class="text-xs font-bold text-slate-800">밝음</span>
+                  <button type="button" onclick="setSegmentValue('overallMood', '밝음')" data-segment-for="overallMood" data-segment-val="밝음" class="mood-card-btn mood-bright">
+                    <span class="text-xl mb-1 select-none">☀️</span>
+                    <span class="text-xs font-semibold text-[#37352F] whitespace-nowrap">밝음</span>
                   </button>
-                  <button type="button" onclick="setSegmentValue('overallMood', '평온')" data-segment-for="overallMood" data-segment-val="평온" class="mood-card-btn mood-calm active py-2.5 px-1">
-                    <span class="text-xl mb-0.5 select-none">😌</span>
-                    <span class="text-xs font-bold text-slate-800">평온</span>
+                  <button type="button" onclick="setSegmentValue('overallMood', '평온')" data-segment-for="overallMood" data-segment-val="평온" class="mood-card-btn mood-calm active">
+                    <span class="text-xl mb-1 select-none">🌱</span>
+                    <span class="text-xs font-semibold text-[#37352F] whitespace-nowrap">평온</span>
                   </button>
-                  <button type="button" onclick="setSegmentValue('overallMood', '불안')" data-segment-for="overallMood" data-segment-val="불안" class="mood-card-btn mood-anxious py-2.5 px-1">
-                    <span class="text-xl mb-0.5 select-none">😟</span>
-                    <span class="text-xs font-bold text-slate-800">불안</span>
+                  <button type="button" onclick="setSegmentValue('overallMood', '불안')" data-segment-for="overallMood" data-segment-val="불안" class="mood-card-btn mood-anxious">
+                    <span class="text-xl mb-1 select-none">☁️</span>
+                    <span class="text-xs font-semibold text-[#37352F] whitespace-nowrap">불안</span>
                   </button>
-                  <button type="button" onclick="setSegmentValue('overallMood', '가라앉음')" data-segment-for="overallMood" data-segment-val="가라앉음" class="mood-card-btn mood-low py-2.5 px-1">
-                    <span class="text-xl mb-0.5 select-none">😢</span>
-                    <span class="text-xs font-bold text-slate-800">가라앉음</span>
+                  <button type="button" onclick="setSegmentValue('overallMood', '가라앉음')" data-segment-for="overallMood" data-segment-val="가라앉음" class="mood-card-btn mood-low">
+                    <span class="text-xl mb-1 select-none">🌧️</span>
+                    <span class="text-xs font-semibold text-[#37352F] whitespace-nowrap">가라앉음</span>
                   </button>
                 </div>
               </div>
 
-              <!-- Rebound & Irritation Controls -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5">저녁 약효 소진 시 (리바운드)</label>
+              <!-- Rebound & Irritation Controls (Stacked for zero cramping) -->
+              <div class="space-y-2.5 mb-3">
+                <div class="bg-[#FAF9F6] p-2.5 rounded-xl border border-[#ECE7DE]">
+                  <label class="block text-[11px] font-semibold text-[#787774] mb-1">저녁 약효 소진 시 (리바운드)</label>
                   <input type="hidden" id="reboundEffect" value="없음" />
                   <div class="segmented-control" role="group" aria-label="저녁 리바운드">
-                    <button type="button" onclick="setSegmentValue('reboundEffect', '없음')" data-segment-for="reboundEffect" data-segment-val="없음" class="segment-btn active accent-emerald">없음 (안정)</button>
-                    <button type="button" onclick="setSegmentValue('reboundEffect', '보통')" data-segment-for="reboundEffect" data-segment-val="보통" class="segment-btn accent-amber">보통 (예민)</button>
-                    <button type="button" onclick="setSegmentValue('reboundEffect', '짜증 심함')" data-segment-for="reboundEffect" data-segment-val="짜증 심함" class="segment-btn accent-rose">짜증 심함 ⚠️</button>
+                    <button type="button" onclick="setSegmentValue('reboundEffect', '없음')" data-segment-for="reboundEffect" data-segment-val="없음" class="segment-btn active accent-emerald whitespace-nowrap">없음 (안정)</button>
+                    <button type="button" onclick="setSegmentValue('reboundEffect', '보통')" data-segment-for="reboundEffect" data-segment-val="보통" class="segment-btn accent-amber whitespace-nowrap">보통 (예민)</button>
+                    <button type="button" onclick="setSegmentValue('reboundEffect', '짜증 심함')" data-segment-for="reboundEffect" data-segment-val="짜증 심함" class="segment-btn accent-rose whitespace-nowrap">짜증 심함</button>
                   </div>
                 </div>
 
-                <div>
-                  <label class="block text-[11px] font-bold text-slate-500 mb-1.5">짜증 / 화 빈도</label>
+                <div class="bg-[#FAF9F6] p-2.5 rounded-xl border border-[#ECE7DE]">
+                  <label class="block text-[11px] font-semibold text-[#787774] mb-1">짜증 / 화 빈도</label>
                   <input type="hidden" id="irritationFreq" value="적음" />
                   <div class="segmented-control" role="group" aria-label="짜증 화 빈도">
-                    <button type="button" onclick="setSegmentValue('irritationFreq', '적음')" data-segment-for="irritationFreq" data-segment-val="적음" class="segment-btn active accent-emerald">적음</button>
-                    <button type="button" onclick="setSegmentValue('irritationFreq', '보통')" data-segment-for="irritationFreq" data-segment-val="보통" class="segment-btn accent-amber">보통 (1~2회)</button>
-                    <button type="button" onclick="setSegmentValue('irritationFreq', '많음')" data-segment-for="irritationFreq" data-segment-val="많음" class="segment-btn accent-rose">많음 (3회↑)</button>
+                    <button type="button" onclick="setSegmentValue('irritationFreq', '적음')" data-segment-for="irritationFreq" data-segment-val="적음" class="segment-btn active accent-emerald whitespace-nowrap">적음 (0회)</button>
+                    <button type="button" onclick="setSegmentValue('irritationFreq', '보통')" data-segment-for="irritationFreq" data-segment-val="보통" class="segment-btn accent-amber whitespace-nowrap">보통 (1~2회)</button>
+                    <button type="button" onclick="setSegmentValue('irritationFreq', '많음')" data-segment-for="irritationFreq" data-segment-val="많음" class="segment-btn accent-rose whitespace-nowrap">많음 (3회↑)</button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="pt-3 border-t border-slate-100">
-              <input type="text" id="angerTrigger" placeholder="분노 유발 상황 (선택: 숙제할 때, 동생과 다툴 때 등)" class="w-full bg-slate-50/70 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-slate-500 focus:outline-none" />
+            <div class="pt-3 border-t border-[#F0ECE4]">
+              <input type="text" id="angerTrigger" placeholder="분노 유발 상황 (선택: 숙제 시작 시, 형제와 다툼 등)" class="paper-input w-full px-3 py-2 text-xs" />
             </div>
           </div>
 
         </div>
 
-        <!-- BENTO CELL 5: 🩺 5. 신체 이상 증상, 틱(Tic) 관찰 및 학교 피드백 (Full-Width Bottom Anchor Card) -->
-        <div class="bg-white rounded-3xl p-5 sm:p-6 shadow-xs border border-slate-200/80 transition-all hover:shadow-md">
-          <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+        <!-- ROW 3 (Full-Width Card): 5. 🩺 신체 이상 증상, 틱(Tic) 관찰 및 학교 피드백 -->
+        <div class="paper-card p-5 sm:p-6">
+          <div class="flex items-center justify-between pb-3 border-b border-[#F0ECE4] mb-5 gap-2">
             <div class="flex items-center space-x-2.5">
-              <div class="w-8 h-8 rounded-xl bg-slate-900 text-teal-400 flex items-center justify-center font-bold text-xs shadow-xs">
-                <i data-lucide="activity" class="w-4 h-4"></i>
+              <div class="w-8 h-8 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#37352F] flex items-center justify-center font-bold text-sm shrink-0">
+                <i data-lucide="activity" class="w-4 h-4 text-[#1E5638]"></i>
               </div>
               <div>
-                <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">5. 🩺 신체 이상 증상, 틱(Tic) 관찰 및 학교 피드백</h2>
-                <p class="text-[11px] text-slate-400">중추신경자극제 부작용 모니터링, 틱 여부 & 학교/가정 종합 소감</p>
+                <h2 class="text-base font-bold text-[#37352F]">5. 🩺 신체 이상 증상, 틱(Tic) 관찰 및 학교 피드백</h2>
+                <p class="text-xs text-[#787774]">중추신경자극제 부작용 모니터링, 틱 여부 & 학교/가정 종합 소감</p>
               </div>
             </div>
-            <span class="text-xs text-slate-600 bg-slate-100 font-semibold px-2.5 py-1 rounded-full">부작용 & 피드백</span>
+            <span class="text-xs text-[#55534E] bg-[#FAF9F6] border border-[#ECE7DE] px-2.5 py-0.5 rounded-full font-medium shrink-0 whitespace-nowrap">부작용 & 피드백</span>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Body Symptoms Tags -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <!-- Left: Body Symptoms Tags -->
             <div class="space-y-3">
               <div class="flex items-center justify-between">
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  신체 증상 (해당 항목 원클릭 토글)
-                </label>
-                <span class="text-[11px] text-slate-400">다중 선택 가능</span>
+                <label class="block text-xs font-bold text-[#37352F]">신체 증상 원클릭 체크 (해당 항목 원클릭 토글)</label>
+                <span class="text-[11px] text-[#787774]">다중 선택 가능</span>
               </div>
-              <div class="flex flex-wrap gap-2" id="symptomTagsContainer">
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="두통" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🤕 두통</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="복통" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🤢 복통 / 소화불량</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="가슴 두근거림" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">💓 가슴 두근거림</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="입 마름" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">💧 입 마름 / 갈증</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="눈 깜빡임" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">👀 눈 깜빡임 (틱)</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="음성 틱" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🗣️ 음성 틱 (헛기침)</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="손 떨림" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🖐️ 손 떨림</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="어지러움" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">💫 어지러움</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="손톱 물어뜯기" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">💅 손톱 물어뜯기</button>
-                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="다리 떨기" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🦵 다리 떨기</button>
+              <div class="flex flex-wrap gap-1.5" id="symptomTagsContainer">
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="두통" class="tag-btn px-2.5 py-1">두통</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="복통" class="tag-btn px-2.5 py-1">복통 / 소화불량</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="가슴 두근거림" class="tag-btn px-2.5 py-1">가슴 두근거림</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="입 마름" class="tag-btn px-2.5 py-1">입 마름 / 갈증</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="눈 깜빡임" class="tag-btn px-2.5 py-1">눈 깜빡임 (틱)</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="음성 틱" class="tag-btn px-2.5 py-1">음성 틱 (헛기침)</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="손 떨림" class="tag-btn px-2.5 py-1">손 떨림</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="어지러움" class="tag-btn px-2.5 py-1">어지러움</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="손톱 물어뜯기" class="tag-btn px-2.5 py-1">손톱 물어뜯기</button>
+                <button type="button" onclick="toggleSymptomTag(this)" data-symptom="다리 떨기" class="tag-btn px-2.5 py-1">다리 떨기</button>
               </div>
-              
-              <div class="mt-2">
-                <input type="text" id="customSymptom" placeholder="기타 신체 증상이나 반복 동작이 있다면 직접 입력하세요" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-slate-500 focus:outline-none" />
+              <div class="flex items-center gap-2 pt-1">
+                <input type="text" id="customSymptom" placeholder="기타 신체 반응 직접 입력" class="paper-input flex-1 px-3 py-1.5 text-xs" />
+                <button type="button" onclick="addCustomSymptom()" class="px-3 py-1.5 bg-[#FAF9F6] hover:bg-[#EFECE6] border border-[#ECE7DE] text-xs font-semibold text-[#55534E] rounded-lg whitespace-nowrap transition">추가</button>
               </div>
             </div>
 
-            <!-- Special Notes Memo -->
-            <div class="flex flex-col justify-between">
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                📝 특이사항 & 종합 관찰 메모
+            <!-- Right: Special Observation Memo -->
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-[#37352F] flex items-center gap-1.5">
+                <span>📝 성장 관찰 종합 메모</span>
+                <span class="text-[11px] font-normal text-[#787774]">(선생님 피드백, 칭찬할 점 등)</span>
               </label>
-              <textarea id="specialMemo" rows="4" placeholder="오늘 하루 우현이의 특별했던 점, 선생님 피드백, 칭찬할 행동, 보호자 소감 등을 자유롭게 기록하세요." class="w-full flex-1 bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-2xl p-3.5 focus:ring-2 focus:ring-slate-500 focus:outline-none leading-relaxed"></textarea>
+              <textarea id="specialMemo" rows="5" placeholder="오늘 하루 우현이의 특별했던 점, 칭찬할 행동, 보호자 소감 및 학교 선생님 피드백을 자유롭게 기록하세요." class="paper-input w-full p-3 text-xs leading-relaxed"></textarea>
             </div>
           </div>
         </div>
 
-        <!-- FLOATING ACTION DOCK: Mac/iOS Capsule Dock -->
-        <div class="sticky bottom-4 z-20 max-w-2xl mx-auto bg-slate-900/95 backdrop-blur-xl border border-slate-800 text-white rounded-2xl p-3 sm:px-5 sm:py-3.5 shadow-2xl flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center space-x-2 text-xs text-slate-400">
-            <i data-lucide="shield-check" class="w-4 h-4 text-teal-400"></i>
-            <span id="saveHint">PC 브라우저 & 스마트폰 실시간 자동 저장</span>
+        <!-- BOTTOM ACTION BAR: Calm & Dignified Paper Toolbar -->
+        <div class="paper-card p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="flex items-center space-x-2 text-xs text-[#787774] font-medium">
+            <i data-lucide="shield-check" class="w-4 h-4 text-[#2D6A4F]"></i>
+            <span id="saveHint">PC 브라우저 및 스마트폰에 안전하게 실시간 동기화됩니다.</span>
           </div>
 
-          <div class="flex items-center space-x-2">
-            <button type="button" onclick="deleteCurrentRecord()" id="deleteBtn" class="hidden px-3.5 py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs sm:text-sm font-bold rounded-xl border border-rose-500/30 transition">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5 inline-block mr-1"></i>삭제
+          <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+            <button type="button" onclick="deleteCurrentRecord()" id="deleteBtn" class="hidden px-3.5 py-2 bg-white hover:bg-[#FDF0EE] text-[#9C2B1B] text-xs font-semibold rounded-lg border border-[#F9CBC5] transition whitespace-nowrap">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5 inline mr-1"></i>삭제
             </button>
-            <button type="button" onclick="resetForm()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-semibold rounded-xl border border-slate-700 transition">
-              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 inline-block mr-1"></i>초기화
+            <button type="button" onclick="resetForm()" class="px-4 py-2 bg-white hover:bg-[#FAF9F6] text-[#787774] text-xs font-semibold rounded-lg border border-[#E0DCD3] transition whitespace-nowrap">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 inline mr-1"></i>초기화
             </button>
-            <button type="submit" class="px-5 py-2 bg-teal-500 hover:bg-teal-400 active:bg-teal-600 text-slate-950 text-xs sm:text-sm font-extrabold rounded-xl shadow-lg shadow-teal-500/25 transition transform active:scale-95 flex items-center space-x-1.5">
-              <i data-lucide="save" class="w-4 h-4 text-slate-950"></i>
+            <button type="submit" class="px-6 py-2 bg-[#2D6A4F] hover:bg-[#20523C] text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition flex items-center space-x-1.5 whitespace-nowrap">
+              <i data-lucide="check" class="w-4 h-4"></i>
               <span id="saveBtnText">기록 저장하기</span>
             </button>
           </div>
         </div>
+
       </form>
     </section>
 
     <!-- ================================================================= -->
-    <!-- TAB 2: 📊 변화 추이 & 통계 분석 (대시보드) -->
+    <!-- TAB 2: 📊 주간 성장 추이 & 통계 분석 (Craft Analytics) -->
     <!-- ================================================================= -->
     <section id="section-dashboard" class="space-y-6 hidden">
       <!-- Filter Bar -->
-      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 class="text-lg font-bold text-slate-800">우현이의 변화 추이 분석 차트</h2>
-          <p class="text-xs text-slate-500">투약 및 날짜별 집중도, 식사량, 기분 및 리바운드 패턴을 시각화합니다.</p>
+      <div class="paper-card p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#37352F] flex items-center justify-center font-bold text-sm shrink-0">
+            <i data-lucide="line-chart" class="w-4 h-4 text-[#2D6A4F]"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-[#37352F]">우현이의 변화 추이 & 상관관계 분석</h2>
+            <p class="text-xs text-[#787774]">투약 및 일자별 수학 집중도, 식사량, 기분 및 저녁 리바운드 종합 시각화</p>
+          </div>
         </div>
         <div class="flex items-center space-x-2">
-          <span class="text-xs font-semibold text-slate-600">분석 기간:</span>
-          <select id="chartPeriodFilter" onchange="updateDashboardCharts()" class="bg-slate-50 border border-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <span class="text-xs font-semibold text-[#787774]">분석 기간:</span>
+          <select id="chartPeriodFilter" onchange="updateDashboardCharts()" class="paper-input text-xs font-medium px-3 py-1.5 cursor-pointer">
             <option value="7">최근 7일</option>
-            <option value="14" selected>최근 14일</option>
+            <option value="14" selected>최근 14일 (권장)</option>
             <option value="30">최근 30일</option>
-            <option value="all">전체 기간</option>
+            <option value="all">전체 누적 기간</option>
           </select>
         </div>
       </div>
 
-      <!-- KPI Summary Cards -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- KPI Summary Cards (Craft Minimal KPI Metric Tiles) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <!-- Average Focus Duration -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="paper-card p-4 sm:p-5">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500">평균 지속 집중</span>
-            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
-              <i data-lucide="timer" class="w-4 h-4"></i>
+            <span class="text-xs font-semibold text-[#787774]">평균 지속 집중</span>
+            <div class="w-7 h-7 rounded-md bg-[#FAF9F6] border border-[#ECE7DE] text-[#245340] flex items-center justify-center">
+              <i data-lucide="timer" class="w-3.5 h-3.5"></i>
             </div>
           </div>
-          <div class="mt-2 flex items-baseline space-x-1.5">
-            <span id="kpiAvgFocus" class="text-2xl font-extrabold text-slate-900">0</span>
-            <span class="text-xs font-bold text-slate-500">분</span>
+          <div class="mt-2 flex items-baseline space-x-1">
+            <span id="kpiAvgFocus" class="text-2xl sm:text-3xl font-bold font-mono text-[#245340]">0</span>
+            <span class="text-xs font-medium text-[#787774]">분 몰입</span>
           </div>
-          <div class="text-[11px] text-slate-400 mt-1">4시 수학 집중도 테스트 기준</div>
+          <div class="text-[11px] text-[#787774] mt-1 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
+            <span>4시 수학 문제 풀이 기준</span>
+          </div>
         </div>
 
         <!-- Average Solved Problems -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="paper-card p-4 sm:p-5">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500">평균 푼 문제 수</span>
-            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
-              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            <span class="text-xs font-semibold text-[#787774]">평균 푼 문제 수</span>
+            <div class="w-7 h-7 rounded-md bg-[#FAF9F6] border border-[#ECE7DE] text-[#37352F] flex items-center justify-center">
+              <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
             </div>
           </div>
-          <div class="mt-2 flex items-baseline space-x-1.5">
-            <span id="kpiAvgProblems" class="text-2xl font-extrabold text-slate-900">0</span>
-            <span class="text-xs font-bold text-slate-500">문제</span>
+          <div class="mt-2 flex items-baseline space-x-1">
+            <span id="kpiAvgProblems" class="text-2xl sm:text-3xl font-bold font-mono text-[#37352F]">0</span>
+            <span class="text-xs font-medium text-[#787774]">문제</span>
           </div>
-          <div class="text-[11px] text-slate-400 mt-1">일일 평균 풀이량</div>
+          <div class="text-[11px] text-[#787774] mt-1 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#37352F]"></span>
+            <span>일일 평균 과제 성취량</span>
+          </div>
         </div>
 
         <!-- Meal Score -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <div class="paper-card p-4 sm:p-5">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500">점심 식사 유지율</span>
-            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-              <i data-lucide="utensils" class="w-4 h-4"></i>
+            <span class="text-xs font-semibold text-[#787774]">점심 식사 유지율</span>
+            <div class="w-7 h-7 rounded-md bg-[#FAF9F6] border border-[#ECE7DE] text-[#1E5638] flex items-center justify-center">
+              <i data-lucide="utensils" class="w-3.5 h-3.5"></i>
             </div>
           </div>
-          <div class="mt-2 flex items-baseline space-x-1.5">
-            <span id="kpiLunchRate" class="text-2xl font-extrabold text-slate-900">0%</span>
+          <div class="mt-2 flex items-baseline space-x-1">
+            <span id="kpiLunchRate" class="text-2xl sm:text-3xl font-bold font-mono text-[#1E5638]">0%</span>
+            <span class="text-xs font-medium text-[#787774]">정상 식사</span>
           </div>
-          <div class="text-[11px] text-slate-400 mt-1">약효 피크 시간 식사량 정상 비율</div>
+          <div class="text-[11px] text-[#787774] mt-1 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#1E5638]"></span>
+            <span>피크 시간대 식욕 정상 비율</span>
+          </div>
         </div>
 
-        <!-- Rebound Severity -->
-        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+        <!-- Rebound Stability -->
+        <div class="paper-card p-4 sm:p-5">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500">저녁 리바운드 없음</span>
-            <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
-              <i data-lucide="smile" class="w-4 h-4"></i>
+            <span class="text-xs font-semibold text-[#787774]">저녁 안정일 비율</span>
+            <div class="w-7 h-7 rounded-md bg-[#FAF9F6] border border-[#ECE7DE] text-[#2D6A4F] flex items-center justify-center">
+              <i data-lucide="smile" class="w-3.5 h-3.5"></i>
             </div>
           </div>
-          <div class="mt-2 flex items-baseline space-x-1.5">
-            <span id="kpiNoReboundRate" class="text-2xl font-extrabold text-slate-900">0%</span>
+          <div class="mt-2 flex items-baseline space-x-1">
+            <span id="kpiNoReboundRate" class="text-2xl sm:text-3xl font-bold font-mono text-[#2D6A4F]">0%</span>
+            <span class="text-xs font-medium text-[#787774]">리바운드 없음</span>
           </div>
-          <div class="text-[11px] text-slate-400 mt-1">저녁 감정 기복 없는 안정일 비율</div>
+          <div class="text-[11px] text-[#787774] mt-1 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#2D6A4F]"></span>
+            <span>소진기 정서 안녕 유지 비율</span>
+          </div>
         </div>
       </div>
 
       <!-- Charts Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Chart 1: Focus Duration & Math Problems Trend -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="trending-up" class="w-5 h-5 text-amber-500"></i>
-              <h3 class="font-bold text-slate-800 text-sm sm:text-base">일자별 지속 집중 시간 & 푼 문제 수</h3>
+        <div class="paper-card p-5 sm:p-6">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#F0ECE4]">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-md bg-[#FAF9F6] border border-[#ECE7DE] text-[#2D6A4F] flex items-center justify-center">
+                <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-[#37352F] text-sm">일자별 지속 집중 시간 & 푼 문제 수</h3>
+                <p class="text-[11px] text-[#787774]">선: 집중 시간(분) · 막대: 풀이 문제 수</p>
+              </div>
             </div>
-            <span class="text-[11px] text-slate-400">선: 집중시간(분) / 막대: 문제 수</span>
+            <span class="text-[11px] font-medium px-2 py-0.5 rounded bg-[#FAF9F6] text-[#787774] border border-[#ECE7DE]">피크 트렌드</span>
           </div>
           <div class="h-64 relative">
             <canvas id="focusChart"></canvas>
@@ -814,13 +934,18 @@
         </div>
 
         <!-- Chart 2: Mood & Rebound Trend -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="heart-pulse" class="w-5 h-5 text-rose-500"></i>
-              <h3 class="font-bold text-slate-800 text-sm sm:text-base">일자별 기분 및 저녁 리바운드 강도</h3>
+        <div class="paper-card p-5 sm:p-6">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#F0ECE4]">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-md bg-[#FAF9F6] border border-[#ECE7DE] text-[#B85D3B] flex items-center justify-center">
+                <i data-lucide="heart-pulse" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-[#37352F] text-sm">일자별 감정 날씨 & 저녁 리바운드 강도</h3>
+                <p class="text-[11px] text-[#787774]">기분 점수(1~4점) vs 저녁 소진기 리바운드(1~3단계)</p>
+              </div>
             </div>
-            <span class="text-[11px] text-slate-400">기분 점수 vs 짜증/리바운드</span>
+            <span class="text-[11px] font-medium px-2 py-0.5 rounded bg-[#FAF9F6] text-[#787774] border border-[#ECE7DE]">정서 밸런스</span>
           </div>
           <div class="h-64 relative">
             <canvas id="moodChart"></canvas>
@@ -828,13 +953,18 @@
         </div>
 
         <!-- Chart 3: Medicine vs Focus Correlation -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="pill" class="w-5 h-5 text-blue-500"></i>
-              <h3 class="font-bold text-slate-800 text-sm sm:text-base">약물 조합별 평균 지속 집중 시간</h3>
+        <div class="paper-card p-5 sm:p-6">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#F0ECE4]">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-md bg-[#FAF9F6] border border-[#ECE7DE] text-[#1C4E80] flex items-center justify-center">
+                <i data-lucide="pill" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-[#37352F] text-sm">약물 조합별 평균 지속 집중 시간</h3>
+                <p class="text-[11px] text-[#787774]">처방 조합별 집중 몰입 시간 정량 비교</p>
+              </div>
             </div>
-            <span class="text-[11px] text-slate-400">투약 조합별 효과 비교</span>
+            <span class="text-[11px] font-medium px-2 py-0.5 rounded bg-[#FAF9F6] text-[#787774] border border-[#ECE7DE]">처방 비교</span>
           </div>
           <div class="h-64 relative">
             <canvas id="medicationChart"></canvas>
@@ -842,13 +972,18 @@
         </div>
 
         <!-- Chart 4: Meal Consumption Distribution -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
-          <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center space-x-2">
-              <i data-lucide="pie-chart" class="w-5 h-5 text-emerald-500"></i>
-              <h3 class="font-bold text-slate-800 text-sm sm:text-base">식사량 분포 (아침 / 점심 / 저녁)</h3>
+        <div class="paper-card p-5 sm:p-6">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-[#F0ECE4]">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-7 h-7 rounded-md bg-[#FAF9F6] border border-[#ECE7DE] text-[#1E5638] flex items-center justify-center">
+                <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-[#37352F] text-sm">끼니별 식사량 분포 (아침 / 점심 / 저녁)</h3>
+                <p class="text-[11px] text-[#787774]">정상 / 70% / 거의안먹음 끼니별 비율</p>
+              </div>
             </div>
-            <span class="text-[11px] text-slate-400">식욕 저하 빈도 분석</span>
+            <span class="text-[11px] font-medium px-2 py-0.5 rounded bg-[#FAF9F6] text-[#787774] border border-[#ECE7DE]">식욕 추이</span>
           </div>
           <div class="h-64 relative">
             <canvas id="mealChart"></canvas>
@@ -858,37 +993,42 @@
     </section>
 
     <!-- ================================================================= -->
-    <!-- TAB 3: 📜 전체 기록표 & 데이터 관리 -->
+    <!-- TAB 3: 📋 전체 기록표 & 데이터 관리 (Notion Database View) -->
     <!-- ================================================================= -->
     <section id="section-table" class="space-y-6 hidden">
-      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h2 class="text-lg font-bold text-slate-800">우현이 관찰 기록 히스토리</h2>
-          <p class="text-xs text-slate-500">기록된 모든 일일 관찰 일지를 열람하고, 수정하거나 엑셀로 내보낼 수 있습니다.</p>
+      <div class="paper-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-9 h-9 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#37352F] flex items-center justify-center shrink-0 font-bold text-sm">
+            <i data-lucide="table" class="w-4 h-4 text-[#2D6A4F]"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-[#37352F]">우현이 일일 관찰 기록 히스토리</h2>
+            <p class="text-xs text-[#787774]">누적된 관찰 일지를 열람 및 수정하고, 엑셀 파일로 안전하게 백업할 수 있습니다.</p>
+          </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick="exportToExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition flex items-center space-x-1.5">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>전체 엑셀(.xlsx) 내보내기</span>
+          <button onclick="exportToExcel()" class="px-3.5 py-1.5 bg-[#2D6A4F] hover:bg-[#20523C] text-white text-xs font-semibold rounded-lg shadow-xs transition flex items-center space-x-1.5">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>전체 엑셀 내보내기</span>
           </button>
-          <button onclick="loadSampleData()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl border border-slate-300 transition flex items-center space-x-1.5">
-            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+          <button onclick="loadSampleData()" class="px-3 py-1.5 bg-white hover:bg-[#FAF9F6] text-[#55534E] text-xs font-medium rounded-lg border border-[#E0DCD3] transition flex items-center space-x-1">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#91590D]"></i>
             <span>샘플 데이터 추가</span>
           </button>
-          <button onclick="clearAllData()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs sm:text-sm font-semibold rounded-xl border border-rose-200 transition flex items-center space-x-1.5">
-            <i data-lucide="trash" class="w-4 h-4"></i>
+          <button onclick="clearAllData()" class="px-3 py-1.5 bg-white hover:bg-[#FDF0EE] text-[#9C2B1B] text-xs font-medium rounded-lg border border-[#F9CBC5] transition flex items-center space-x-1">
+            <i data-lucide="trash" class="w-3.5 h-3.5"></i>
             <span>전체 삭제</span>
           </button>
         </div>
       </div>
 
       <!-- Table & Mobile Cards Container -->
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="paper-card overflow-hidden">
         
         <!-- Desktop Table View (md 이상) -->
         <div class="hidden md:block overflow-x-auto">
-          <table class="w-full text-left text-xs sm:text-sm text-slate-600">
-            <thead class="bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+          <table class="w-full text-left text-xs sm:text-sm text-[#37352F]">
+            <thead class="bg-[#FAF9F6] text-[#787774] text-xs font-semibold uppercase tracking-wider border-b border-[#ECE7DE]">
               <tr>
                 <th class="px-4 py-3.5">날짜 (요일)</th>
                 <th class="px-4 py-3.5">투약 정보 (약/용량)</th>
@@ -900,330 +1040,331 @@
                 <th class="px-4 py-3.5 text-center">관리</th>
               </tr>
             </thead>
-            <tbody id="recordsTableBody" class="divide-y divide-slate-100 font-medium">
+            <tbody id="recordsTableBody" class="divide-y divide-[#F0ECE4] font-medium">
               <!-- Dynamically populated rows -->
             </tbody>
           </table>
         </div>
 
         <!-- Mobile Card List View (md 미만 모바일 전용) -->
-        <div id="mobileCardsContainer" class="block md:hidden divide-y divide-slate-100 p-3 space-y-3">
+        <div id="mobileCardsContainer" class="block md:hidden divide-y divide-[#F0ECE4] p-3 space-y-3">
           <!-- Dynamically populated mobile cards -->
         </div>
 
-        <div id="emptyTableMessage" class="py-12 text-center text-slate-400 hidden">
-          <i data-lucide="clipboard-list" class="w-12 h-12 mx-auto text-slate-300 mb-2"></i>
-          <p class="text-sm">아직 저장된 관찰 기록이 없습니다.</p>
-          <button onclick="switchTab('record')" class="mt-3 text-xs font-bold text-blue-600 hover:underline">오늘의 첫 기록 작성하러 가기 &rarr;</button>
+        <div id="emptyTableMessage" class="py-12 text-center text-[#787774] hidden">
+          <div class="w-12 h-12 rounded-xl bg-[#FAF9F6] border border-[#ECE7DE] text-[#9B9A97] flex items-center justify-center mx-auto mb-2">
+            <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+          </div>
+          <p class="text-sm font-semibold text-[#37352F]">아직 저장된 관찰 기록이 없습니다.</p>
+          <p class="text-xs text-[#787774] mt-0.5">오늘 우현이의 관찰 기록을 작성해보세요.</p>
+          <button onclick="switchTab('record')" class="mt-3 px-3.5 py-1.5 bg-[#2D6A4F] text-white text-xs font-medium rounded-lg shadow-xs hover:bg-[#20523C] transition">오늘의 첫 기록 작성하기 &rarr;</button>
         </div>
       </div>
     </section>
 
     <!-- ================================================================= -->
-    <!-- TAB 4: 🏥 소아청소년정신과 전문의 진료 브리핑 리포트 (의사용 1장 요약) -->
+    <!-- TAB 4: 🩺 전문의 정기 진료 & 성장 발달 브리핑 리포트 (의사용 1장 요약) -->
     <!-- ================================================================= -->
     <section id="section-briefing" class="space-y-6 hidden">
       <!-- Briefing Top Toolbar & Period Filters (no-print) -->
-      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-between gap-4 no-print">
-        <div class="flex items-center space-x-3 w-full md:w-auto">
-          <div class="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 flex items-center justify-center text-teal-700 shrink-0">
-            <i data-lucide="stethoscope" class="w-5 h-5"></i>
+      <div class="paper-card p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
+        <div class="flex items-center space-x-3 w-full sm:w-auto">
+          <div class="w-9 h-9 rounded-lg bg-[#FAF9F6] border border-[#ECE7DE] text-[#2D6A4F] flex items-center justify-center font-bold text-sm shrink-0">
+            <i data-lucide="stethoscope" class="w-4 h-4"></i>
           </div>
           <div>
             <div class="flex items-center space-x-2">
-              <h2 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">전문의 진료 브리핑 리포트</h2>
-              <span class="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 border border-teal-200">정기 상담 5분 최적화</span>
+              <h2 class="text-base font-bold text-[#37352F]">전문의 진료 & 성장 발달 브리핑</h2>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-[#EBF5EE] text-[#1E5638] border border-[#D0EADB] font-medium">정기 상담 5분 최적화</span>
             </div>
-            <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">약효 피크(4시 집중도) · 소진기(저녁 리바운드) · 3대 부작용(식욕/수면/틱) 전수 분석</p>
+            <p class="text-xs text-[#787774] mt-0.5">약효 피크(4시 집중도) · 소진기(저녁 리바운드) · 3대 부작용(식욕/수면/틱) 임상 브리핑</p>
           </div>
         </div>
 
         <!-- Period Selectors & Action Buttons -->
-        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-start md:justify-end">
-          <!-- Filter Buttons -->
-          <div class="inline-flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80 text-xs">
-            <button type="button" onclick="setBriefingDays(7)" id="briefing-btn-7" class="briefing-days-btn px-2.5 py-1 rounded-lg font-semibold transition text-slate-600 hover:text-slate-900">최근 7일</button>
-            <button type="button" onclick="setBriefingDays(14)" id="briefing-btn-14" class="briefing-days-btn px-2.5 py-1 rounded-lg font-bold transition bg-slate-900 text-white shadow-xs">최근 14일 (권장)</button>
-            <button type="button" onclick="setBriefingDays(30)" id="briefing-btn-30" class="briefing-days-btn px-2.5 py-1 rounded-lg font-semibold transition text-slate-600 hover:text-slate-900">최근 30일</button>
-            <button type="button" onclick="setBriefingDays('all')" id="briefing-btn-all" class="briefing-days-btn px-2.5 py-1 rounded-lg font-semibold transition text-slate-600 hover:text-slate-900">전체</button>
+        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-start sm:justify-end">
+          <div class="inline-flex items-center bg-[#EFECE6] p-1 rounded-lg border border-[#E5E1D8] text-xs">
+            <button type="button" onclick="setBriefingDays(7)" id="briefing-btn-7" class="briefing-days-btn px-2.5 py-1 rounded-md font-medium transition text-[#787774] hover:text-[#37352F]">7일</button>
+            <button type="button" onclick="setBriefingDays(14)" id="briefing-btn-14" class="briefing-days-btn px-2.5 py-1 rounded-md font-semibold transition bg-white text-[#37352F] shadow-xs border border-[#DFDBD2]">14일 (권장)</button>
+            <button type="button" onclick="setBriefingDays(30)" id="briefing-btn-30" class="briefing-days-btn px-2.5 py-1 rounded-md font-medium transition text-[#787774] hover:text-[#37352F]">30일</button>
+            <button type="button" onclick="setBriefingDays('all')" id="briefing-btn-all" class="briefing-days-btn px-2.5 py-1 rounded-md font-medium transition text-[#787774] hover:text-[#37352F]">전체</button>
           </div>
 
-          <!-- Action Buttons: Print & Copy -->
-          <button type="button" onclick="printDoctorBriefing()" class="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-xs transition cursor-pointer">
-            <i data-lucide="printer" class="w-4 h-4"></i>
+          <button type="button" onclick="printDoctorBriefing()" class="inline-flex items-center space-x-1 px-3 py-1.5 bg-[#2D6A4F] hover:bg-[#20523C] text-white text-xs font-semibold rounded-lg shadow-xs transition cursor-pointer">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i>
             <span>진료실 1장 인쇄 / PDF</span>
           </button>
-          <button type="button" onclick="copyDoctorBriefingText()" class="inline-flex items-center space-x-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium rounded-xl border border-slate-300 transition cursor-pointer" title="의사 선생님 또는 상담사에게 보낼 텍스트 요약 복사">
-            <i data-lucide="copy" class="w-4 h-4 text-slate-500"></i>
+          <button type="button" onclick="copyDoctorBriefingText()" class="inline-flex items-center space-x-1 px-3 py-1.5 bg-white hover:bg-[#FAF9F6] text-[#55534E] text-xs font-medium rounded-lg border border-[#E0DCD3] transition cursor-pointer" title="의사 선생님 또는 상담사에게 보낼 텍스트 요약 복사">
+            <i data-lucide="copy" class="w-3.5 h-3.5 text-[#787774]"></i>
             <span>텍스트 복사</span>
           </button>
         </div>
       </div>
 
       <!-- Empty State for Briefing -->
-      <div id="briefingEmptyState" class="bg-white rounded-3xl p-12 text-center text-slate-400 border border-slate-200 hidden">
-        <i data-lucide="file-x" class="w-12 h-12 mx-auto text-slate-300 mb-3"></i>
-        <h3 class="text-base font-bold text-slate-700">분석할 관찰 기록이 없습니다.</h3>
-        <p class="text-xs text-slate-500 mt-1">일일 관찰 기록을 1건 이상 등록하면 전문의 진료 브리핑 리포트가 자동 집계됩니다.</p>
-        <button onclick="switchTab('record')" class="mt-4 px-4 py-2 bg-teal-600 text-white text-xs font-bold rounded-xl shadow-sm hover:bg-teal-700">오늘의 첫 기록 작성하기 &rarr;</button>
+      <div id="briefingEmptyState" class="paper-card p-10 text-center text-[#787774] hidden">
+        <i data-lucide="file-x" class="w-10 h-10 mx-auto text-[#9B9A97] mb-2"></i>
+        <h3 class="text-sm font-bold text-[#37352F]">분석할 관찰 기록이 없습니다.</h3>
+        <p class="text-xs text-[#787774] mt-1">일일 관찰 기록을 1건 이상 등록하면 전문의 진료 브리핑 리포트가 자동 집계됩니다.</p>
+        <button onclick="switchTab('record')" class="mt-3 px-3.5 py-1.5 bg-[#2D6A4F] text-white text-xs font-medium rounded-lg shadow-xs hover:bg-[#20523C]">오늘의 첫 기록 작성하기 &rarr;</button>
       </div>
 
       <!-- Briefing Printable Content Area -->
-      <div id="briefingContentArea" class="bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-slate-200 print-card space-y-6">
+      <div id="briefingContentArea" class="bg-white rounded-xl p-6 sm:p-8 shadow-xs border border-[#ECE7DE] print-card space-y-6">
         
         <!-- Header Banner: Clinical Report Title & Patient Metadata -->
-        <div class="border-b-2 border-slate-900 pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+        <div class="border-b-2 border-[#37352F] pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <div class="flex items-center space-x-2">
-              <span class="px-2.5 py-0.5 rounded-md bg-teal-700 text-white font-extrabold text-[11px] tracking-wider uppercase">Clinical Briefing</span>
-              <span class="text-xs text-slate-500 font-medium">소아청소년정신과 / 발달클리닉 정기 진료 상담용</span>
+              <span class="px-2 py-0.5 rounded bg-[#EBF5EE] text-[#1E5638] font-bold text-xs tracking-wider uppercase">Clinical Briefing</span>
+              <span class="text-xs text-[#787774]">정기 진료 & 성장 발달 클리닉 상담용</span>
             </div>
-            <h1 class="text-xl sm:text-2xl font-black text-slate-900 mt-1 tracking-tight">우현이 정기 진료 & 성장 발달 브리핑 리포트</h1>
+            <h1 class="text-xl sm:text-2xl font-bold text-[#37352F] mt-1 tracking-tight">우현이 정기 진료 & 성장 발달 브리핑 리포트</h1>
           </div>
-          <div class="text-left sm:text-right text-xs text-slate-600 space-y-0.5 shrink-0 bg-slate-50 sm:bg-transparent p-2.5 sm:p-0 rounded-xl">
-            <p><span class="font-bold text-slate-800">환아:</span> 우현 (만 8세 / 남) <span class="mx-1 text-slate-300">|</span> <span class="font-bold text-slate-800">분석 기간:</span> <span id="briefingPeriodText" class="font-bold text-teal-700">2026-08-23 ~ 2026-09-05</span></p>
-            <p><span class="font-bold text-slate-800">분석 일수:</span> 총 <span id="briefingTotalDays" class="font-bold text-slate-900">14</span>일간 관찰 <span class="mx-1 text-slate-300">|</span> <span class="font-bold text-slate-800">발행일:</span> <span id="briefingGeneratedDate">2026-09-05</span></p>
+          <div class="text-left sm:text-right text-xs text-[#787774] space-y-0.5 shrink-0 bg-[#FAF9F6] sm:bg-transparent p-2.5 sm:p-0 rounded-lg">
+            <p><span class="font-semibold text-[#37352F]">환아:</span> 우현 (만 8세 / 남) <span class="mx-1 text-[#DDD9D0]">|</span> <span class="font-semibold text-[#37352F]">분석 기간:</span> <span id="briefingPeriodText" class="font-bold text-[#2D6A4F]">2026-08-23 ~ 2026-09-05</span></p>
+            <p><span class="font-semibold text-[#37352F]">분석 일수:</span> 총 <span id="briefingTotalDays" class="font-bold text-[#37352F]">14</span>일간 관찰 <span class="mx-1 text-[#DDD9D0]">|</span> <span class="font-semibold text-[#37352F]">발행일:</span> <span id="briefingGeneratedDate">2026-09-05</span></p>
           </div>
         </div>
 
         <!-- Section 1: Current Prescription & Compliance Banner -->
-        <div class="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="bg-[#FAF9F6] text-[#37352F] border border-[#ECE7DE] rounded-xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div class="space-y-1">
             <div class="flex items-center space-x-2">
-              <span class="w-2 h-2 rounded-full bg-teal-400"></span>
-              <span class="text-[11px] font-bold uppercase tracking-wider text-teal-300">현재 유지 처방 및 복용 스케줄</span>
+              <span class="w-2 h-2 rounded-full bg-[#2E7D32]"></span>
+              <span class="text-xs font-bold uppercase tracking-wider text-[#1E5638]">현재 유지 처방 및 복용 스케줄</span>
             </div>
-            <div class="text-base sm:text-lg font-extrabold text-white flex flex-wrap items-center gap-2">
+            <div class="text-base font-bold text-[#37352F] flex flex-wrap items-center gap-2">
               <span id="briefingCurrentMeds">메디키넷 10mg + 아빌리파이 1mg</span>
             </div>
-            <p class="text-xs text-slate-400">
-              최근 투약 시각: <span id="briefingMedTime" class="text-slate-200 font-semibold">오전 08:30 (식후 30분)</span>
+            <p class="text-xs text-[#787774]">
+              최근 투약 시각: <span id="briefingMedTime" class="text-[#37352F] font-semibold">오전 08:30 (식후 30분)</span>
             </p>
           </div>
 
-          <div class="flex items-center space-x-4 bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700/80 shrink-0">
-            <div class="text-center border-r border-slate-700 pr-4">
-              <span class="text-[10px] text-slate-400 block font-medium">복용 순응도</span>
-              <span id="briefingMedCompliance" class="text-lg font-black text-teal-400">100%</span>
+          <div class="flex items-center space-x-4 bg-white px-4 py-2.5 rounded-lg border border-[#EAE5DC] shrink-0">
+            <div class="text-center border-r border-[#ECE7DE] pr-4">
+              <span class="text-[10px] text-[#787774] block">복용 순응도</span>
+              <span id="briefingMedCompliance" class="text-lg font-bold text-[#2D6A4F]">100%</span>
             </div>
             <div class="text-center">
-              <span class="text-[10px] text-slate-400 block font-medium">실 복용 일수</span>
-              <span class="text-lg font-extrabold text-white"><span id="briefingMedDays">14</span><span class="text-xs font-normal text-slate-400">/<span id="briefingTotalDays2">14</span>일</span></span>
+              <span class="text-[10px] text-[#787774] block">실 복용 일수</span>
+              <span class="text-lg font-bold text-[#37352F]"><span id="briefingMedDays">14</span><span class="text-xs font-normal text-[#787774]">/<span id="briefingTotalDays2">14</span>일</span></span>
             </div>
           </div>
         </div>
 
-        <!-- Section 2: 5 Clinical Core KPIs (Bento Cards) -->
+        <!-- Section 2: 5 Clinical Core KPIs -->
         <div>
-          <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <i data-lucide="activity" class="w-3.5 h-3.5 text-teal-600"></i>
-            <span>전문의 10초 핵심 임상 지표 (Clinical Executive Summary)</span>
+          <h3 class="text-xs font-bold text-[#787774] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+            <i data-lucide="activity" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
+            <span>전문의 10초 핵심 임상 지표</span>
           </h3>
-          <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2.5">
             <!-- KPI 1: Compliance -->
-            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-              <span class="text-[11px] font-bold text-slate-500 block">💊 복용 순응도</span>
-              <span id="kpiMedCompliance" class="text-xl font-black text-slate-900 mt-1 block">100%</span>
-              <span class="text-[10px] text-teal-700 font-medium mt-0.5 block">처방 일정 완벽 준수</span>
+            <div class="bg-[#FAF9F6] p-3 rounded-lg border border-[#ECE7DE]">
+              <span class="text-[11px] font-semibold text-[#787774] block">💊 복용 순응도</span>
+              <span id="kpiMedCompliance" class="text-lg font-bold text-[#37352F] mt-0.5 block">100%</span>
+              <span class="text-[10px] text-[#1E5638] font-medium block">처방 일정 완벽 준수</span>
             </div>
 
             <!-- KPI 2: 4PM Focus Duration -->
-            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-              <span class="text-[11px] font-bold text-slate-500 block">🎯 4시 지속 집중</span>
-              <div class="flex items-baseline space-x-1 mt-1">
-                <span id="kpiAvgFocus" class="text-xl font-black text-teal-700">24</span>
-                <span class="text-xs font-bold text-slate-600">분</span>
+            <div class="bg-[#FAF9F6] p-3 rounded-lg border border-[#ECE7DE]">
+              <span class="text-[11px] font-semibold text-[#787774] block">🎯 4시 지속 집중</span>
+              <div class="flex items-baseline space-x-1 mt-0.5">
+                <span id="kpiAvgFocus" class="text-lg font-bold text-[#245340]">24</span>
+                <span class="text-xs text-[#787774]">분</span>
               </div>
-              <span class="text-[10px] text-slate-500 font-medium mt-0.5 block">수학 평균 <span id="kpiAvgProblems" class="font-bold text-slate-800">18</span>제</span>
+              <span class="text-[10px] text-[#787774] block">수학 평균 <span id="kpiAvgProblems" class="font-bold text-[#37352F]">18</span>제</span>
             </div>
 
             <!-- KPI 3: Evening Rebound Rate -->
-            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-              <span class="text-[11px] font-bold text-slate-500 block">⚡ 저녁 리바운드</span>
-              <div class="flex items-baseline space-x-1 mt-1">
-                <span id="kpiReboundRate" class="text-xl font-black text-rose-600">21%</span>
+            <div class="bg-[#FAF9F6] p-3 rounded-lg border border-[#ECE7DE]">
+              <span class="text-[11px] font-semibold text-[#787774] block">⚡ 저녁 리바운드</span>
+              <div class="flex items-baseline space-x-1 mt-0.5">
+                <span id="kpiReboundRate" class="text-lg font-bold text-[#9C2B1B]">21%</span>
               </div>
-              <span class="text-[10px] text-slate-500 font-medium mt-0.5 block">심함 <span id="kpiReboundSevere" class="font-bold text-rose-700">1</span>일 / 보통 <span id="kpiReboundMid" class="font-bold text-slate-800">2</span>일</span>
+              <span class="text-[10px] text-[#787774] block">심함 <span id="kpiReboundSevere" class="font-bold text-[#9C2B1B]">1</span>일 / 보통 <span id="kpiReboundMid" class="font-bold text-[#37352F]">2</span>일</span>
             </div>
 
             <!-- KPI 4: Lunch Appetite Drop -->
-            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-              <span class="text-[11px] font-bold text-slate-500 block">🍱 점심 식욕 부진</span>
-              <div class="flex items-baseline space-x-1 mt-1">
-                <span id="kpiLunchDropRate" class="text-xl font-black text-amber-600">14%</span>
+            <div class="bg-[#FAF9F6] p-3 rounded-lg border border-[#ECE7DE]">
+              <span class="text-[11px] font-semibold text-[#787774] block">🍱 점심 식욕 부진</span>
+              <div class="flex items-baseline space-x-1 mt-0.5">
+                <span id="kpiLunchDropRate" class="text-lg font-bold text-[#91590D]">14%</span>
               </div>
-              <span class="text-[10px] text-slate-500 font-medium mt-0.5 block">70%이하 <span id="kpiLunchDropDays" class="font-bold text-amber-700">2</span>일</span>
+              <span class="text-[10px] text-[#787774] block">70%이하 <span id="kpiLunchDropDays" class="font-bold text-[#91590D]">2</span>일</span>
             </div>
 
             <!-- KPI 5: Sleep Delay & Wake -->
-            <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 col-span-2 md:col-span-1">
-              <span class="text-[11px] font-bold text-slate-500 block">🌙 입면 지연/야간 깸</span>
-              <div class="flex items-baseline space-x-1 mt-1">
-                <span id="kpiSleepIssues" class="text-xl font-black text-indigo-700">3</span>
-                <span class="text-xs font-bold text-slate-600">일</span>
+            <div class="bg-[#FAF9F6] p-3 rounded-lg border border-[#ECE7DE] col-span-2 md:col-span-1">
+              <span class="text-[11px] font-semibold text-[#787774] block">🌙 입면 지연/야간 깸</span>
+              <div class="flex items-baseline space-x-1 mt-0.5">
+                <span id="kpiSleepIssues" class="text-lg font-bold text-[#1C4E80]">3</span>
+                <span class="text-xs text-[#787774]">일</span>
               </div>
-              <span class="text-[10px] text-slate-500 font-medium mt-0.5 block">30분 이상 지연/뒤척임</span>
+              <span class="text-[10px] text-[#787774] block">30분 이상 지연/뒤척임</span>
             </div>
           </div>
         </div>
 
-        <!-- Section 3: Detailed 3-Column Bento Analysis -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Section 3: Detailed 3-Column Analysis -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
           
           <!-- Column A: 4 PM Math Focus Test Analysis -->
-          <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 flex flex-col justify-between">
+          <div class="bg-[#FAF9F6] p-3.5 rounded-lg border border-[#ECE7DE] flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-3">
-                <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <i data-lucide="target" class="w-3.5 h-3.5 text-amber-600"></i>
+              <div class="flex items-center justify-between pb-2 border-b border-[#ECE7DE] mb-2.5">
+                <h4 class="text-xs font-bold text-[#37352F] flex items-center gap-1.5">
+                  <i data-lucide="target" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
                   <span>1. 4시 약효 피크 집중도</span>
                 </h4>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-100 text-amber-800">학습 지속력</span>
+                <span class="text-[10px] font-medium px-2 py-0.5 rounded bg-white text-[#55534E] border border-[#ECE7DE]">학습 몰입</span>
               </div>
 
-              <div class="space-y-2.5 text-xs">
-                <div class="flex justify-between items-center py-1 border-b border-slate-100">
-                  <span class="text-slate-500">평균 몰입 지속 / 총 시간</span>
-                  <span class="font-bold text-slate-800"><span id="detAvgFocus" class="text-teal-700 font-extrabold">24분</span> / <span id="detAvgDuration">32분</span></span>
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between items-center py-1 border-b border-[#F0ECE4]">
+                  <span class="text-[#787774]">평균 몰입 지속 / 총 시간</span>
+                  <span class="font-bold text-[#37352F]"><span id="detAvgFocus" class="text-[#245340] font-bold">24분</span> / <span id="detAvgDuration">32분</span></span>
                 </div>
-                <div class="flex justify-between items-center py-1 border-b border-slate-100">
-                  <span class="text-slate-500">평균 푼 문제 수</span>
-                  <span class="font-bold text-slate-800"><span id="detAvgProblems">18</span>문제</span>
+                <div class="flex justify-between items-center py-1 border-b border-[#F0ECE4]">
+                  <span class="text-[#787774]">평균 푼 문제 수</span>
+                  <span class="font-bold text-[#37352F]"><span id="detAvgProblems">18</span>문제</span>
                 </div>
-                <div class="py-1 border-b border-slate-100">
-                  <span class="text-slate-500 block mb-1">과제 시작 태도:</span>
+                <div class="py-1 border-b border-[#F0ECE4]">
+                  <span class="text-[#787774] block mb-1">과제 시작 태도:</span>
                   <div class="grid grid-cols-3 gap-1 text-[11px] text-center">
-                    <span class="bg-white py-1 rounded-lg border border-slate-200 font-medium">스스로 <strong id="detSelfStart" class="text-indigo-600 font-bold block">11일</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200 font-medium">독려 <strong id="detGentlePrompt" class="text-slate-700 font-bold block">3일</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200 font-medium">거부 <strong id="detSevereRefusal" class="text-rose-600 font-bold block">0일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">스스로 <strong id="detSelfStart" class="text-[#1E5638] font-bold block">11일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">독려 <strong id="detGentlePrompt" class="text-[#787774] font-bold block">3일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">거부 <strong id="detSevereRefusal" class="text-[#9C2B1B] font-bold block">0일</strong></span>
                   </div>
                 </div>
                 <div class="flex justify-between items-center py-1">
-                  <span class="text-slate-500">주의 분산(딴짓)</span>
-                  <span class="font-bold text-slate-700">적음 <span id="detDistractLow">11</span> · 보통 <span id="detDistractMid">3</span> · 잦음 <span id="detDistractHigh">0</span></span>
+                  <span class="text-[#787774]">주의 분산</span>
+                  <span class="font-bold text-[#55534E]">적음 <span id="detDistractLow">11</span> · 보통 <span id="detDistractMid">3</span> · 잦음 <span id="detDistractHigh">0</span></span>
                 </div>
               </div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-200/80 text-[11px] text-slate-500">
-              💡 약효 시간대 수학 과제 몰입도가 안정적으로 지속되며 착수 거부가 최소화되었습니다.
+            <div class="mt-2.5 pt-2 border-t border-[#ECE7DE] text-[11px] text-[#787774]">
+              💡 약효 시간대 과제 몰입도가 안정적으로 지속되며 거부 반응이 최소화되었습니다.
             </div>
           </div>
 
           <!-- Column B: Evening Rebound & Mood Dynamics -->
-          <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 flex flex-col justify-between">
+          <div class="bg-[#FAF9F6] p-3.5 rounded-lg border border-[#ECE7DE] flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-3">
-                <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i>
+              <div class="flex items-center justify-between pb-2 border-b border-[#ECE7DE] mb-2.5">
+                <h4 class="text-xs font-bold text-[#37352F] flex items-center gap-1.5">
+                  <i data-lucide="heart" class="w-3.5 h-3.5 text-[#B85D3B]"></i>
                   <span>2. 저녁 리바운드 & 감정</span>
                 </h4>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-100 text-rose-800">소진기 반동</span>
+                <span class="text-[10px] font-medium px-2 py-0.5 rounded bg-white text-[#55534E] border border-[#ECE7DE]">소진기 반동</span>
               </div>
 
-              <div class="space-y-2.5 text-xs">
-                <div class="py-1 border-b border-slate-100">
-                  <span class="text-slate-500 block mb-1">저녁 리바운드 강도:</span>
+              <div class="space-y-2 text-xs">
+                <div class="py-1 border-b border-[#F0ECE4]">
+                  <span class="text-[#787774] block mb-1">저녁 리바운드 강도:</span>
                   <div class="grid grid-cols-3 gap-1 text-[11px] text-center">
-                    <span class="bg-white py-1 rounded-lg border border-slate-200 font-medium">안정 <strong id="detReboundNone" class="text-emerald-700 font-bold block">11일</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200 font-medium">보통 <strong id="detReboundMid" class="text-amber-700 font-bold block">2일</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200 font-medium">심함 <strong id="detReboundHigh" class="text-rose-600 font-bold block">1일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">안정 <strong id="detReboundNone" class="text-[#1E5638] font-bold block">11일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">보통 <strong id="detReboundMid" class="text-[#91590D] font-bold block">2일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">심함 <strong id="detReboundHigh" class="text-[#9C2B1B] font-bold block">1일</strong></span>
                   </div>
                 </div>
 
-                <div class="py-1 border-b border-slate-100">
-                  <span class="text-slate-500 block mb-1">전반적 기분 분포:</span>
+                <div class="py-1 border-b border-[#F0ECE4]">
+                  <span class="text-[#787774] block mb-1">전반적 기분 분포:</span>
                   <div class="grid grid-cols-4 gap-1 text-[10px] text-center">
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">😊밝음 <strong id="detMoodBright" class="block font-bold">5</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">😌평온 <strong id="detMoodCalm" class="block font-bold">7</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">😟불안 <strong id="detMoodAnxious" class="block font-bold">2</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">😢다운 <strong id="detMoodLow" class="block font-bold">0</strong></span>
+                    <span class="bg-white py-0.5 rounded border border-[#ECE7DE]">☀️ <strong id="detMoodBright" class="block font-bold">5</strong></span>
+                    <span class="bg-white py-0.5 rounded border border-[#ECE7DE]">🌱 <strong id="detMoodCalm" class="block font-bold">7</strong></span>
+                    <span class="bg-white py-0.5 rounded border border-[#ECE7DE]">☁️ <strong id="detMoodAnxious" class="block font-bold">2</strong></span>
+                    <span class="bg-white py-0.5 rounded border border-[#ECE7DE]">🌧️ <strong id="detMoodLow" class="block font-bold">0</strong></span>
                   </div>
                 </div>
 
                 <div>
-                  <span class="text-slate-500 block mb-1">주요 분노/짜증 트리거 일지:</span>
-                  <div id="briefingTriggerList" class="bg-white p-2 rounded-xl border border-slate-200 max-h-20 overflow-y-auto space-y-1 text-[11px] text-slate-700">
+                  <span class="text-[#787774] block mb-1">주요 감정 트리거 일지:</span>
+                  <div id="briefingTriggerList" class="bg-white p-2 rounded border border-[#ECE7DE] max-h-16 overflow-y-auto space-y-1 text-[11px] text-[#55534E]">
                     <!-- Dynamically populated triggers -->
                   </div>
                 </div>
               </div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-200/80 text-[11px] text-slate-500">
-              💡 저녁 6시~8시 사이 과제 독려 및 형제 갈등 시 감정 반응 주의 관찰이 권장됩니다.
+            <div class="mt-2.5 pt-2 border-t border-[#ECE7DE] text-[11px] text-[#787774]">
+              💡 저녁 6~8시경 약효 소진 시 감정 반응 관찰이 권장됩니다.
             </div>
           </div>
 
           <!-- Column C: Adverse Events, Appetite, Sleep, Tics -->
-          <div class="bg-slate-50/70 p-4 rounded-2xl border border-slate-200/80 flex flex-col justify-between">
+          <div class="bg-[#FAF9F6] p-3.5 rounded-lg border border-[#ECE7DE] flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between pb-2 border-b border-slate-200 mb-3">
-                <h4 class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                  <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-indigo-600"></i>
+              <div class="flex items-center justify-between pb-2 border-b border-[#ECE7DE] mb-2.5">
+                <h4 class="text-xs font-bold text-[#37352F] flex items-center gap-1.5">
+                  <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-[#1C4E80]"></i>
                   <span>3. 3대 주요 부작용 추적</span>
                 </h4>
-                <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800">안전성 모니터링</span>
+                <span class="text-[10px] font-medium px-2 py-0.5 rounded bg-white text-[#55534E] border border-[#ECE7DE]">안전성</span>
               </div>
 
-              <div class="space-y-2.5 text-xs">
-                <div class="py-1 border-b border-slate-100">
-                  <span class="text-slate-500 block mb-1">점심 식사량 (약효 피크):</span>
+              <div class="space-y-2 text-xs">
+                <div class="py-1 border-b border-[#F0ECE4]">
+                  <span class="text-[#787774] block mb-1">점심 식사량 (약효 피크):</span>
                   <div class="grid grid-cols-3 gap-1 text-[11px] text-center">
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">정상 <strong id="detLunchNormal" class="text-emerald-700 font-bold block">12일</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">70% <strong id="detLunch70" class="text-amber-700 font-bold block">2일</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">안먹음 <strong id="detLunchNone" class="text-rose-600 font-bold block">0일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">정상 <strong id="detLunchNormal" class="text-[#1E5638] font-bold block">12일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">70% <strong id="detLunch70" class="text-[#91590D] font-bold block">2일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">안먹음 <strong id="detLunchNone" class="text-[#9C2B1B] font-bold block">0일</strong></span>
                   </div>
                 </div>
 
-                <div class="py-1 border-b border-slate-100">
-                  <span class="text-slate-500 block mb-1">수면 패턴 (입면 소요 시간):</span>
+                <div class="py-1 border-b border-[#F0ECE4]">
+                  <span class="text-[#787774] block mb-1">수면 (입면 소요 시간):</span>
                   <div class="grid grid-cols-3 gap-1 text-[11px] text-center">
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">15분내 <strong id="detSleepSmooth" class="text-emerald-700 font-bold block">11일</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">30분+ <strong id="detSleepDelayed" class="text-amber-700 font-bold block">3일</strong></span>
-                    <span class="bg-white py-1 rounded-lg border border-slate-200">1시간+ <strong id="detSleepInsomnia" class="text-rose-600 font-bold block">0일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">15분내 <strong id="detSleepSmooth" class="text-[#1E5638] font-bold block">11일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">30분+ <strong id="detSleepDelayed" class="text-[#91590D] font-bold block">3일</strong></span>
+                    <span class="bg-white py-1 rounded border border-[#ECE7DE]">1시간+ <strong id="detSleepInsomnia" class="text-[#9C2B1B] font-bold block">0일</strong></span>
                   </div>
                 </div>
 
                 <div>
-                  <span class="text-slate-500 block mb-1">신체 증상 및 틱(Tic) 관찰:</span>
+                  <span class="text-[#787774] block mb-1">신체 증상 및 틱 관찰:</span>
                   <div id="briefingSymptomBadges" class="flex flex-wrap gap-1">
                     <!-- Dynamically populated symptom badges -->
                   </div>
                 </div>
               </div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-200/80 text-[11px] text-slate-500">
-              💡 눈 깜빡임 등 틱 징후 및 급격한 식욕 저하 여부를 정기 문진 시 점검합니다.
+            <div class="mt-2.5 pt-2 border-t border-[#ECE7DE] text-[11px] text-[#787774]">
+              💡 틱 징후 및 급격한 식욕 저하 여부를 정기 문진 시 점검합니다.
             </div>
           </div>
 
         </div>
 
         <!-- Section 4: Recommended Doctor Consultation Checkpoints -->
-        <div class="bg-gradient-to-r from-teal-50/70 via-slate-50 to-indigo-50/70 p-4 sm:p-5 rounded-2xl border border-teal-200/80">
-          <div class="flex items-center justify-between pb-3 border-b border-teal-200/60 mb-3">
-            <h3 class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
-              <i data-lucide="help-circle" class="w-4 h-4 text-teal-700"></i>
+        <div class="bg-[#FAF9F6] p-4 rounded-xl border border-[#ECE7DE]">
+          <div class="flex items-center justify-between pb-2 border-b border-[#ECE7DE] mb-2.5">
+            <h3 class="text-xs font-bold text-[#37352F] flex items-center gap-1.5">
+              <i data-lucide="help-circle" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
               <span>이번 진료 전문의 상담 추천 포인트 (의사 선생님과 상의할 핵심 질문)</span>
             </h3>
-            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-teal-200/60 text-teal-900">데이터 기반 자동 제안</span>
+            <span class="text-[10px] font-medium px-2 py-0.5 rounded bg-white text-[#2D6A4F] border border-[#ECE7DE]">자동 제안</span>
           </div>
 
-          <div id="briefingDoctorQuestions" class="space-y-2">
+          <div id="briefingDoctorQuestions" class="space-y-1.5 text-xs text-[#55534E]">
             <!-- Dynamically populated doctor consultation questions -->
           </div>
         </div>
 
         <!-- Section 5: Doctor / Guardian Notes Area (Printable memo pad) -->
-        <div class="border border-dashed border-slate-300 rounded-2xl p-4 bg-slate-50/50">
+        <div class="border border-dashed border-[#DDD8CE] rounded-xl p-4 bg-[#FAF9F6]">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-              <i data-lucide="edit" class="w-3.5 h-3.5 text-slate-500"></i>
+            <span class="text-xs font-bold text-[#37352F] flex items-center gap-1.5">
+              <i data-lucide="edit" class="w-3.5 h-3.5 text-[#787774]"></i>
               <span>진료실 현장 메모 및 전문의 처방 소견 (자필 기록란)</span>
             </span>
-            <span class="text-[10px] text-slate-400">인쇄 시 메모 작성 가능</span>
+            <span class="text-[10px] text-[#787774]">인쇄 시 메모 작성 가능</span>
           </div>
-          <div class="h-16 border-b border-slate-200 border-dashed mb-2"></div>
-          <div class="flex justify-between text-[10px] text-slate-400 pt-1">
+          <div class="h-16 border-b border-[#DDD8CE] border-dashed mb-2"></div>
+          <div class="flex justify-between text-[10px] text-[#787774] pt-1">
             <span>차기 진료 예정일: ____________________</span>
             <span>담당 전문의 확인: ____________________ (서명)</span>
           </div>
@@ -1234,74 +1375,76 @@
 
   </main>
 
-  <!-- Mobile Fixed Bottom Navigation Bar (스마트폰 전용 하단 탭 바 - 4대 핵심 메뉴) -->
-  <nav id="mobileFixedBottomNav" class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-3 py-2 flex items-center justify-around shadow-xl no-print">
-    <button type="button" onclick="switchTab('record')" id="mobile-tab-record" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-900 font-bold transition">
-      <i data-lucide="edit-3" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[11px]">일일기록</span>
-    </button>
-    <button type="button" onclick="switchTab('dashboard')" id="mobile-tab-dashboard" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400 font-medium transition">
-      <i data-lucide="line-chart" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[11px]">변화분석</span>
-    </button>
-    <button type="button" onclick="switchTab('briefing')" id="mobile-tab-briefing" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400 font-medium transition">
-      <i data-lucide="stethoscope" class="w-5 h-5 mb-0.5 text-teal-600"></i>
-      <span class="text-[11px] font-bold text-teal-700">진료브리핑</span>
-    </button>
-    <button type="button" onclick="switchTab('table')" id="mobile-tab-table" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-400 font-medium transition">
-      <i data-lucide="list" class="w-5 h-5 mb-0.5"></i>
-      <span class="text-[11px]">기록목록</span>
-    </button>
-  </nav>
+  <!-- Mobile Fixed Bottom Navigation Bar (Notion Style Cream Bar) -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#F7F6F3]/95 backdrop-blur-md border-t border-[#EAE5DC] px-2 py-1.5 no-print shadow-sm">
+    <nav id="mobileFixedBottomNav" class="flex items-center justify-around">
+      <button type="button" onclick="switchTab('record')" id="mobile-tab-record" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-[#37352F] font-bold transition">
+        <i data-lucide="edit-3" class="w-4 h-4 mb-0.5 text-[#2D6A4F]"></i>
+        <span class="text-[10px]">오늘기록</span>
+      </button>
+      <button type="button" onclick="switchTab('dashboard')" id="mobile-tab-dashboard" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-[#787774] font-medium transition">
+        <i data-lucide="line-chart" class="w-4 h-4 mb-0.5"></i>
+        <span class="text-[10px]">성장추이</span>
+      </button>
+      <button type="button" onclick="switchTab('briefing')" id="mobile-tab-briefing" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-[#787774] font-medium transition">
+        <i data-lucide="stethoscope" class="w-4 h-4 mb-0.5"></i>
+        <span class="text-[10px]">진료브리핑</span>
+      </button>
+      <button type="button" onclick="switchTab('table')" id="mobile-tab-table" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-[#787774] font-medium transition">
+        <i data-lucide="list" class="w-4 h-4 mb-0.5"></i>
+        <span class="text-[10px]">전체기록</span>
+      </button>
+    </nav>
+  </div>
 
-  <!-- Mobile QR Connect Modal (스마트폰 접속 안내 팝업) -->
-  <div id="mobileQrModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden transition-opacity">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
-      <button onclick="closeMobileQrModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition">
-        <i data-lucide="x" class="w-5 h-5"></i>
+  <!-- Mobile QR Connect Modal (Notion Paper Modal) -->
+  <div id="mobileQrModal" class="fixed inset-0 z-50 bg-[#37352F]/40 backdrop-blur-xs flex items-center justify-center p-4 hidden transition-opacity">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-[#ECE7DE] relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeMobileQrModal()" class="absolute top-4 right-4 p-1.5 text-[#787774] hover:text-[#37352F] hover:bg-[#FAF9F6] rounded-lg transition">
+        <i data-lucide="x" class="w-4 h-4"></i>
       </button>
 
       <div class="text-center">
-        <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-3 shadow-sm">
-          <i data-lucide="smartphone" class="w-6 h-6"></i>
+        <div class="w-10 h-10 rounded-xl bg-[#FAF9F6] border border-[#ECE7DE] text-[#2D6A4F] flex items-center justify-center mx-auto mb-2.5">
+          <i data-lucide="smartphone" class="w-5 h-5"></i>
         </div>
-        <h3 class="text-lg font-bold text-slate-900">핸드폰(스마트폰)으로 접속하기</h3>
-        <p class="text-xs text-slate-500 mt-1">집에서 컴퓨터와 <strong>같은 Wi-Fi</strong>에 연결된 상태에서 카메라로 비추면 바로 열립니다.</p>
+        <h3 class="text-base font-bold text-[#37352F]">스마트폰으로 접속하기</h3>
+        <p class="text-xs text-[#787774] mt-0.5">집에서 컴퓨터와 <strong>같은 Wi-Fi</strong>에 연결된 상태에서 카메라로 비추면 바로 열립니다.</p>
       </div>
 
       <!-- QR Code Display Area -->
-      <div class="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center">
-        <div id="qrcodeCanvas" class="bg-white p-3 rounded-2xl shadow-xs border border-slate-200 min-w-[190px] min-h-[190px] flex items-center justify-center">
-          <img id="fallbackQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http%3A%2F%2F192.168.218.125%3A5500" alt="스마트폰 접속 QR 코드" class="w-[180px] h-[180px] rounded-lg" />
+      <div class="mt-4 p-4 bg-[#FAF9F6] rounded-xl border border-[#ECE7DE] flex flex-col items-center justify-center">
+        <div id="qrcodeCanvas" class="bg-white p-3 rounded-xl border border-[#ECE7DE] min-w-[180px] min-h-[180px] flex items-center justify-center">
+          <img id="fallbackQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=http%3A%2F%2F192.168.218.125%3A5500" alt="스마트폰 접속 QR 코드" class="w-[170px] h-[170px] rounded" />
         </div>
         
         <div class="mt-3 text-center w-full">
-          <div class="text-[11px] font-semibold text-slate-500 mb-1.5 flex items-center justify-center gap-1">
-            <i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-500"></i>
-            <span>스마트폰 브라우저 접속 주소:</span>
+          <div class="text-[11px] font-semibold text-[#787774] mb-1 flex items-center justify-center gap-1">
+            <i data-lucide="wifi" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
+            <span>스마트폰 접속 주소:</span>
           </div>
           
           <div class="flex items-center space-x-1.5 justify-center">
-            <code id="mobileUrlDisplay" class="bg-white px-3 py-1.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-mono font-bold text-indigo-600 select-all shadow-xs">http://192.168.218.125:5500</code>
-            <button onclick="copyMobileUrl()" title="주소 복사" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition shadow-xs text-xs font-semibold flex items-center gap-1">
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <code id="mobileUrlDisplay" class="bg-white px-2.5 py-1 rounded-md border border-[#DDD8CE] text-xs font-mono font-bold text-[#2D6A4F] select-all">http://192.168.218.125:5500</code>
+            <button onclick="copyMobileUrl()" title="주소 복사" class="px-2.5 py-1 bg-[#2D6A4F] hover:bg-[#20523C] text-white rounded-md text-xs font-medium flex items-center gap-1 transition">
+              <i data-lucide="copy" class="w-3 h-3"></i>
               <span>복사</span>
             </button>
           </div>
 
-          <!-- IP Change Toggle / Options -->
-          <div class="mt-2.5 flex items-center justify-center gap-2">
-            <button type="button" onclick="toggleIpEdit()" class="text-[11px] font-semibold text-slate-500 hover:text-indigo-600 underline">
-              IP 주소가 다른가요? 직접 변경
+          <!-- IP Change Toggle -->
+          <div class="mt-2 flex items-center justify-center">
+            <button type="button" onclick="toggleIpEdit()" class="text-[11px] text-[#787774] hover:text-[#37352F] underline">
+              IP 주소 직접 변경
             </button>
           </div>
 
-          <div id="customIpContainer" class="mt-2 hidden bg-white p-2.5 rounded-xl border border-slate-200">
-            <div class="flex items-center gap-1.5">
-              <span class="text-xs text-slate-400 font-mono">http://</span>
-              <input type="text" id="customIpInput" value="192.168.218.125" placeholder="192.168.x.x" class="flex-1 bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg px-2 py-1.5 font-mono" />
-              <span class="text-xs text-slate-400 font-mono">:5500</span>
-              <button type="button" onclick="applyCustomIp()" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition">
+          <div id="customIpContainer" class="mt-2 hidden bg-white p-2 rounded-lg border border-[#ECE7DE]">
+            <div class="flex items-center gap-1">
+              <span class="text-xs text-[#9B9A97] font-mono">http://</span>
+              <input type="text" id="customIpInput" value="192.168.218.125" placeholder="192.168.x.x" class="flex-1 paper-input text-xs px-2 py-1 font-mono" />
+              <span class="text-xs text-[#9B9A97] font-mono">:5500</span>
+              <button type="button" onclick="applyCustomIp()" class="px-2.5 py-1 bg-[#37352F] text-white text-xs font-medium rounded hover:bg-[#222] transition">
                 적용
               </button>
             </div>
@@ -1310,20 +1453,20 @@
       </div>
 
       <!-- Steps Guide -->
-      <div class="mt-4 space-y-2 text-xs text-slate-600 bg-blue-50/80 p-3.5 rounded-2xl border border-blue-100">
-        <div class="font-bold text-blue-900 flex items-center gap-1.5">
-          <i data-lucide="check-circle-2" class="w-4 h-4 text-blue-600"></i>
-          <span>접속 3단계 가이드</span>
+      <div class="mt-3 text-xs text-[#55534E] bg-[#FAF9F6] p-3 rounded-xl border border-[#ECE7DE]">
+        <div class="font-semibold text-[#37352F] flex items-center gap-1.5 mb-1">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
+          <span>연결 3단계 가이드</span>
         </div>
-        <ol class="list-decimal list-inside space-y-1 text-slate-700 leading-relaxed">
-          <li>핸드폰이 <strong>컴퓨터와 같은 집 Wi-Fi</strong>에 연결되어 있는지 확인합니다.</li>
-          <li>핸드폰 <strong>기본 카메라</strong>로 위 QR 코드를 비춥니다.</li>
-          <li>화면에 뜨는 주소 링크를 터치하면 모바일 화면이 바로 열립니다!</li>
+        <ol class="list-decimal list-inside space-y-0.5 text-[11px] text-[#787774] leading-relaxed">
+          <li>핸드폰이 <strong>컴퓨터와 같은 집 Wi-Fi</strong>에 연결되었는지 확인</li>
+          <li>핸드폰 <strong>기본 카메라</strong>로 위 QR 코드를 비춤</li>
+          <li>화면에 뜨는 링크를 터치하면 모바일 일지가 즉시 열림</li>
         </ol>
       </div>
 
       <div class="mt-4">
-        <button onclick="closeMobileQrModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition shadow-md">
+        <button onclick="closeMobileQrModal()" class="w-full py-2.5 bg-[#FAF9F6] hover:bg-[#EFECE6] text-[#37352F] font-semibold text-xs rounded-xl border border-[#DDD8CE] transition">
           닫기
         </button>
       </div>
@@ -1334,9 +1477,9 @@
   <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2 pointer-events-none"></div>
 
   <!-- Footer -->
-  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 no-print mt-auto">
-    <div class="max-w-7xl mx-auto px-4">
-      우현이 일일 관찰 기록표 &copy; 2026. PC 및 스마트폰에서 실시간 동기화되며 엑셀로 안전하게 백업할 수 있습니다.
+  <footer class="bg-[#F7F6F3] border-t border-[#EAE5DC] py-4 text-center text-xs text-[#787774] no-print mt-auto">
+    <div class="max-w-5xl mx-auto px-4 font-normal">
+      우현이 일일 관찰 기록표 &copy; 2026. PC 및 스마트폰 실시간 로컬 동기화 & 엑셀 안전 백업 지원.
     </div>
   </footer>
 
@@ -1802,21 +1945,21 @@
         const cleanChip = chip.toLowerCase().replace(/\s+/g, '');
         const isActive = cleanCur === cleanChip;
         const activeClass = isActive 
-          ? 'bg-blue-600 text-white border-blue-600 shadow-sm font-bold active-chip' 
-          : 'bg-white text-slate-600 border-slate-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 font-medium';
-        return `<button type="button" onclick="setMedDosage('${rowId}', '${chip}')" data-dosage="${chip}" class="med-chip-btn px-2 py-1 rounded-md text-[11px] border transition select-none cursor-pointer ${activeClass}">${chip}</button>`;
+          ? 'bg-[#2D6A4F] text-white border-[#2D6A4F] shadow-2xs font-semibold active-chip' 
+          : 'bg-white text-[#55534E] border-[#E0DCD3] hover:bg-[#FAF9F6] hover:text-[#37352F] font-medium';
+        return `<button type="button" onclick="setMedDosage('${rowId}', '${chip}')" data-dosage="${chip}" class="med-chip-btn px-2 py-0.5 rounded-md text-[11px] border transition select-none cursor-pointer ${activeClass}">${chip}</button>`;
       }).join('');
 
       const labelIcon = isAbilify ? 'sparkles' : 'zap';
       const labelText = isAbilify ? '소수점 빠른 선택' : config.label;
       const stepHint = isAbilify 
-        ? '<span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">±0.5mg 조절</span>' 
+        ? '<span class="text-[10px] text-[#2D6A4F] font-medium bg-[#EBF5EE] px-1.5 py-0.5 rounded border border-[#D0EADB]">±0.5mg 조절</span>' 
         : '';
 
       return `
-        <div class="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 w-full pt-0.5">
-          <span class="text-[11px] font-semibold text-slate-500 flex items-center gap-1 shrink-0">
-            <i data-lucide="${labelIcon}" class="w-3.5 h-3.5 text-blue-500"></i>
+        <div class="flex flex-wrap items-center gap-1.5 text-xs text-[#787774] w-full pt-0.5">
+          <span class="text-[11px] font-medium text-[#787774] flex items-center gap-1 shrink-0">
+            <i data-lucide="${labelIcon}" class="w-3.5 h-3.5 text-[#2D6A4F]"></i>
             ${labelText}:
           </span>
           <div class="flex flex-wrap items-center gap-1 flex-1">
@@ -1852,38 +1995,43 @@
 
       const rowDiv = document.createElement('div');
       rowDiv.id = rowId;
-      rowDiv.className = 'medicine-row flex flex-col gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 transition-all hover:border-slate-300';
+      rowDiv.className = 'medicine-row flex flex-col gap-2 bg-[#FAF9F6] p-3 rounded-lg border border-[#ECE7DE] transition-all hover:border-[#DDD8CE]';
 
       rowDiv.innerHTML = `
-        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
-          <div class="flex-1 min-w-[130px]">
-            <select class="med-type-select w-full bg-white border border-slate-200 text-slate-800 font-semibold text-xs sm:text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs" onchange="onMedSelectChange(this)">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+          <div class="flex items-center gap-2 flex-1">
+            <select class="med-type-select paper-input flex-1 text-xs font-semibold px-2.5 py-1.5" onchange="onMedSelectChange(this)">
               <option value="메디키넷" ${selectVal === '메디키넷' ? 'selected' : ''}>💊 메디키넷</option>
               <option value="콘서타" ${selectVal === '콘서타' ? 'selected' : ''}>💊 콘서타</option>
               <option value="아빌리파이" ${selectVal === '아빌리파이' ? 'selected' : ''}>💊 아빌리파이</option>
               <option value="직접 입력" ${selectVal === '직접 입력' ? 'selected' : ''}>✏️ 직접 입력</option>
             </select>
+            <button type="button" onclick="removeMedicineRow('${rowId}')" title="이 약물 삭제" class="sm:hidden p-1.5 text-[#9C2B1B] hover:text-[#7A1D11] hover:bg-[#FDF0EE] rounded-md transition shrink-0">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
           <div class="med-custom-container flex-1 min-w-[110px] ${selectVal === '직접 입력' ? '' : 'hidden'}">
-            <input type="text" value="${customVal}" placeholder="약 이름 직접입력" class="med-custom-input w-full bg-white border border-slate-200 text-slate-800 text-xs sm:text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs" />
+            <input type="text" value="${customVal}" placeholder="약 이름 직접입력" class="med-custom-input paper-input w-full text-xs px-2.5 py-1.5" />
           </div>
-          <div class="flex items-center space-x-1">
-            <button type="button" onclick="stepMedDosage('${rowId}', -1)" title="용량 감소" class="w-8 h-9 flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm shadow-xs transition select-none">
-              -
-            </button>
-            <input type="text" list="med-datalist-${rowId}" value="${actualDosage}" placeholder="${config.placeholder}" class="med-dosage-input w-28 sm:w-36 bg-white border border-slate-200 text-slate-800 text-xs sm:text-sm rounded-lg px-2.5 py-2 font-medium text-center focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs" oninput="onDosageInputChange('${rowId}')" />
-            <button type="button" onclick="stepMedDosage('${rowId}', 1)" title="용량 증가" class="w-8 h-9 flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm shadow-xs transition select-none">
-              +
+          <div class="flex items-center justify-between sm:justify-start space-x-1.5">
+            <div class="flex items-center space-x-1 flex-1 sm:flex-none">
+              <button type="button" onclick="stepMedDosage('${rowId}', -1)" title="용량 감소" class="w-7 h-8 flex items-center justify-center bg-white border border-[#E0DCD3] hover:bg-[#FAF9F6] text-[#55534E] font-bold rounded-md text-xs transition select-none">
+                -
+              </button>
+              <input type="text" list="med-datalist-${rowId}" value="${actualDosage}" placeholder="${config.placeholder}" class="med-dosage-input paper-input flex-1 sm:w-28 text-xs py-1.5 font-mono font-medium text-center" oninput="onDosageInputChange('${rowId}')" />
+              <button type="button" onclick="stepMedDosage('${rowId}', 1)" title="용량 증가" class="w-7 h-8 flex items-center justify-center bg-white border border-[#E0DCD3] hover:bg-[#FAF9F6] text-[#55534E] font-bold rounded-md text-xs transition select-none">
+                +
+              </button>
+            </div>
+            <button type="button" onclick="removeMedicineRow('${rowId}')" title="이 약물 삭제" class="hidden sm:inline-flex p-1.5 text-[#9C2B1B] hover:text-[#7A1D11] hover:bg-[#FDF0EE] rounded-md transition shrink-0">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             </button>
           </div>
           <div id="datalist-container-${rowId}">
             ${renderMedDatalistHTML(selectVal, rowId)}
           </div>
-          <button type="button" onclick="removeMedicineRow('${rowId}')" title="이 약물 삭제" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition shrink-0">
-            <i data-lucide="trash-2" class="w-4 h-4"></i>
-          </button>
         </div>
-        <div id="chips-container-${rowId}" class="med-preset-chips border-t border-slate-100 pt-2">
+        <div id="chips-container-${rowId}" class="med-preset-chips border-t border-[#ECE7DE] pt-1.5">
           ${renderMedChipsHTML(selectVal, actualDosage, rowId)}
         </div>
       `;
@@ -1907,16 +2055,13 @@
         customDiv.classList.add('hidden');
       }
 
-      // Update placeholder
       dosageInput.placeholder = config.placeholder;
 
-      // When switching drug preset, if dosage is currently a default from another drug, adjust to sensible default
       const currentVal = dosageInput.value.trim();
       if (!currentVal || currentVal === '10mg' || currentVal === '18mg' || currentVal === '1mg') {
         dosageInput.value = config.defaultDosage;
       }
 
-      // Update Datalist and Chips
       const datalistContainer = document.getElementById(`datalist-container-${rowId}`);
       if (datalistContainer) {
         datalistContainer.innerHTML = renderMedDatalistHTML(medType, rowId);
@@ -1954,9 +2099,9 @@
       chips.forEach(chip => {
         const chipVal = (chip.getAttribute('data-dosage') || '').toLowerCase().replace(/\s+/g, '');
         if (chipVal === currentVal) {
-          chip.className = 'med-chip-btn px-2 py-1 rounded-md text-[11px] border transition select-none cursor-pointer bg-blue-600 text-white border-blue-600 shadow-sm font-bold active-chip';
+          chip.className = 'med-chip-btn px-2 py-0.5 rounded-md text-[11px] border transition select-none cursor-pointer bg-[#2D6A4F] text-white border-[#2D6A4F] shadow-2xs font-semibold active-chip';
         } else {
-          chip.className = 'med-chip-btn px-2 py-1 rounded-md text-[11px] border transition select-none cursor-pointer bg-white text-slate-600 border-slate-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 font-medium';
+          chip.className = 'med-chip-btn px-2 py-0.5 rounded-md text-[11px] border transition select-none cursor-pointer bg-white text-[#55534E] border-[#E0DCD3] hover:bg-[#FAF9F6] hover:text-[#37352F] font-medium';
         }
       });
     }
@@ -2077,7 +2222,7 @@
         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
         <span>새 기록 작성 중</span>
       `;
-      document.getElementById('recordStatusBadge').className = 'text-xs px-3 py-1.5 rounded-full font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30 flex items-center space-x-1';
+      document.getElementById('recordStatusBadge').className = 'text-xs px-2.5 py-1 rounded-md font-medium bg-[#EBF5EE] text-[#1E5638] border border-[#D0EADB] flex items-center space-x-1 shrink-0 whitespace-nowrap';
       document.getElementById('saveBtnText').textContent = '기록 저장하기';
       document.getElementById('deleteBtn').classList.add('hidden');
 
@@ -2132,7 +2277,7 @@
         <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
         <span>기존 기록 수정 모드</span>
       `;
-      document.getElementById('recordStatusBadge').className = 'text-xs px-3 py-1.5 rounded-full font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30 flex items-center space-x-1';
+      document.getElementById('recordStatusBadge').className = 'text-xs px-2.5 py-1 rounded-md font-medium bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] flex items-center space-x-1 shrink-0 whitespace-nowrap';
       document.getElementById('saveBtnText').textContent = '수정 내용 저장';
       document.getElementById('deleteBtn').classList.remove('hidden');
 
@@ -2363,24 +2508,24 @@
     function switchTab(tabName) {
       // 1. Desktop Tab Buttons
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-white', 'text-slate-900', 'font-bold', 'shadow-xs', 'border', 'border-slate-200/80');
-        btn.classList.add('text-slate-600', 'font-medium');
+        btn.classList.remove('bg-white', 'text-[#37352F]', 'font-semibold', 'shadow-xs', 'border', 'border-[#DFDBD2]');
+        btn.classList.add('text-[#787774]', 'font-medium');
       });
       const activeDesktopBtn = document.getElementById('tab-' + tabName);
       if (activeDesktopBtn) {
-        activeDesktopBtn.classList.add('bg-white', 'text-slate-900', 'font-bold', 'shadow-xs', 'border', 'border-slate-200/80');
-        activeDesktopBtn.classList.remove('text-slate-600', 'font-medium');
+        activeDesktopBtn.classList.add('bg-white', 'text-[#37352F]', 'font-semibold', 'shadow-xs', 'border', 'border-[#DFDBD2]');
+        activeDesktopBtn.classList.remove('text-[#787774]', 'font-medium');
       }
 
       // 2. Mobile Bottom Navigation Buttons
       document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
-        btn.classList.remove('text-slate-900', 'font-bold');
-        btn.classList.add('text-slate-400', 'font-medium');
+        btn.classList.remove('text-[#37352F]', 'font-bold');
+        btn.classList.add('text-[#787774]', 'font-medium');
       });
       const activeMobileBtn = document.getElementById('mobile-tab-' + tabName);
       if (activeMobileBtn) {
-        activeMobileBtn.classList.add('text-slate-900', 'font-bold');
-        activeMobileBtn.classList.remove('text-slate-400', 'font-medium');
+        activeMobileBtn.classList.add('text-[#37352F]', 'font-bold');
+        activeMobileBtn.classList.remove('text-[#787774]', 'font-medium');
       }
 
       // 3. Toggle Sections
@@ -2949,6 +3094,10 @@
     function updateDashboardCharts() {
       if (!records || records.length === 0) return;
 
+      // Set Chart.js defaults to modern typography
+      Chart.defaults.font.family = "'Pretendard', sans-serif";
+      Chart.defaults.color = '#64748b';
+
       const periodVal = document.getElementById('chartPeriodFilter').value;
       let filtered = [...records].sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -2991,9 +3140,15 @@
         return 1;
       });
 
-      // 1. Focus & Problem Chart (Combo)
+      // 1. Focus & Problem Chart (Linear Gradient Combo)
+      // 1. Focus & Problem Chart (Notion/Craft Paper Theme)
       const ctxFocus = document.getElementById('focusChart').getContext('2d');
       if (focusChartInstance) focusChartInstance.destroy();
+
+      const gradFocus = ctxFocus.createLinearGradient(0, 0, 0, 240);
+      gradFocus.addColorStop(0, 'rgba(45, 106, 79, 0.2)');
+      gradFocus.addColorStop(1, 'rgba(45, 106, 79, 0.01)');
+
       focusChartInstance = new Chart(ctxFocus, {
         type: 'bar',
         data: {
@@ -3003,19 +3158,26 @@
               type: 'line',
               label: '지속 집중 시간 (분)',
               data: focusDurations,
-              borderColor: '#f59e0b',
-              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              borderColor: '#2D6A4F',
+              backgroundColor: gradFocus,
               borderWidth: 3,
-              tension: 0.3,
+              tension: 0.35,
               fill: true,
+              pointBackgroundColor: '#2D6A4F',
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 2,
+              pointRadius: 4,
+              pointHoverRadius: 6,
               yAxisID: 'y'
             },
             {
               type: 'bar',
               label: '푼 문제 수',
               data: problemCounts,
-              backgroundColor: 'rgba(59, 130, 246, 0.65)',
+              backgroundColor: 'rgba(120, 119, 116, 0.35)',
+              hoverBackgroundColor: 'rgba(55, 53, 47, 0.65)',
               borderRadius: 6,
+              borderSkipped: false,
               yAxisID: 'y1'
             }
           ]
@@ -3024,12 +3186,23 @@
           responsive: true,
           maintainAspectRatio: false,
           interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: {
+              labels: { font: { family: "'Pretendard', sans-serif", weight: '600', size: 11 }, color: '#37352F', usePointStyle: true, boxWidth: 8 }
+            }
+          },
           scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: "'Pretendard', sans-serif", size: 11 }, color: '#787774' }
+            },
             y: {
               type: 'linear',
               display: true,
               position: 'left',
-              title: { display: true, text: '집중 시간 (분)' },
+              title: { display: true, text: '집중 시간 (분)', font: { family: "'Pretendard', sans-serif", weight: '600', size: 11 }, color: '#2D6A4F' },
+              grid: { color: '#ECE7DE' },
+              ticks: { font: { family: "'JetBrains Mono', monospace", size: 11 }, color: '#787774' },
               suggestedMin: 0
             },
             y1: {
@@ -3037,56 +3210,82 @@
               display: true,
               position: 'right',
               grid: { drawOnChartArea: false },
-              title: { display: true, text: '문제 수' },
+              title: { display: true, text: '문제 수', font: { family: "'Pretendard', sans-serif", weight: '600', size: 11 }, color: '#787774' },
+              ticks: { font: { family: "'JetBrains Mono', monospace", size: 11 }, color: '#787774' },
               suggestedMin: 0
             }
           }
         }
       });
 
-      // 2. Mood & Rebound Chart
+      // 2. Mood & Rebound Chart (Dual Curves)
       const ctxMood = document.getElementById('moodChart').getContext('2d');
       if (moodChartInstance) moodChartInstance.destroy();
+
+      const gradMood = ctxMood.createLinearGradient(0, 0, 0, 240);
+      gradMood.addColorStop(0, 'rgba(184, 93, 59, 0.18)');
+      gradMood.addColorStop(1, 'rgba(184, 93, 59, 0.01)');
+
       moodChartInstance = new Chart(ctxMood, {
         type: 'line',
         data: {
           labels: labels,
           datasets: [
             {
-              label: '전반적 기분 (4:밝음 ~ 1:가라앉음)',
+              label: '전반적 감정 (4:밝음 ~ 1:가라앉음)',
               data: moodScores,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderColor: '#B85D3B',
+              backgroundColor: gradMood,
               borderWidth: 2.5,
-              tension: 0.3,
+              tension: 0.35,
+              fill: true,
+              pointBackgroundColor: '#B85D3B',
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 2,
               pointRadius: 4
             },
             {
               label: '저녁 리바운드 강도 (3:심함 ~ 1:없음)',
               data: reboundScores,
-              borderColor: '#ef4444',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              borderWidth: 2.5,
-              borderDash: [5, 5],
-              tension: 0.3,
-              pointRadius: 4
+              borderColor: '#9C2B1B',
+              backgroundColor: 'transparent',
+              borderWidth: 2,
+              borderDash: [5, 4],
+              tension: 0.35,
+              fill: false,
+              pointBackgroundColor: '#9C2B1B',
+              pointBorderColor: '#ffffff',
+              pointBorderWidth: 2,
+              pointRadius: 3.5
             }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { font: { family: "'Pretendard', sans-serif", weight: '600', size: 11 }, color: '#37352F', usePointStyle: true, boxWidth: 8 }
+            }
+          },
           scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: "'Pretendard', sans-serif", size: 11 }, color: '#787774' }
+            },
             y: {
-              min: 0,
+              min: 0.5,
               max: 4.5,
+              grid: { color: '#ECE7DE' },
               ticks: {
                 stepSize: 1,
+                font: { family: "'Pretendard', sans-serif", size: 10 },
+                color: '#787774',
                 callback: function(v) {
-                  if (v === 4) return '😊 밝음';
-                  if (v === 3) return '😌 평온 / ⚠️심함';
-                  if (v === 2) return '😟 보통';
-                  if (v === 1) return '😢 가라앉음/없음';
+                  if (v === 4) return '☀️ 맑음';
+                  if (v === 3) return '🌱 평온 / ⚠️심함';
+                  if (v === 2) return '☁️ 흐림 (보통)';
+                  if (v === 1) return '🌧️ 비 (없음)';
                   return '';
                 }
               }
@@ -3116,24 +3315,35 @@
         data: {
           labels: medLabels,
           datasets: [{
-            label: '평균 집중 시간 (분)',
+            label: '평균 지속 집중 시간 (분)',
             data: medAvgs,
             backgroundColor: [
-              'rgba(59, 130, 246, 0.7)',
-              'rgba(147, 51, 234, 0.7)',
-              'rgba(236, 72, 153, 0.7)',
-              'rgba(16, 185, 129, 0.7)'
+              'rgba(45, 106, 79, 0.75)',
+              'rgba(28, 78, 128, 0.75)',
+              'rgba(184, 93, 59, 0.75)',
+              'rgba(105, 42, 142, 0.75)',
+              'rgba(145, 89, 13, 0.75)'
             ],
-            borderRadius: 8
+            borderRadius: 6,
+            borderSkipped: false
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
           scales: {
+            x: {
+              grid: { display: false },
+              ticks: { font: { family: "'Pretendard', sans-serif", size: 10 }, color: '#787774' }
+            },
             y: {
               beginAtZero: true,
-              title: { display: true, text: '평균 집중 시간 (분)' }
+              grid: { color: '#ECE7DE' },
+              title: { display: true, text: '평균 집중 시간 (분)', font: { family: "'Pretendard', sans-serif", weight: '600', size: 11 }, color: '#787774' },
+              ticks: { font: { family: "'JetBrains Mono', monospace", size: 11 }, color: '#787774' }
             }
           }
         }
@@ -3163,31 +3373,48 @@
       mealChartInstance = new Chart(ctxMeal, {
         type: 'bar',
         data: {
-          labels: ['아침 식사', '점심 식사 (약효 피크)', '저녁 식사'],
+          labels: ['아침 식사', '점심 (약효 피크)', '저녁 식사'],
           datasets: [
             {
               label: '정상 식사',
               data: [breakfastCount['정상'], lunchCount['정상'], dinnerCount['정상']],
-              backgroundColor: '#10b981'
+              backgroundColor: '#2D6A4F',
+              borderRadius: 6
             },
             {
               label: '평소의 70%',
               data: [breakfastCount['70%'], lunchCount['70%'], dinnerCount['70%']],
-              backgroundColor: '#f59e0b'
+              backgroundColor: '#B85D3B',
+              borderRadius: 6
             },
             {
-              label: '거의 안 먹음 (식욕저하)',
+              label: '거의 안 먹음 (식욕 저하)',
               data: [breakfastCount['안먹음'], lunchCount['안먹음'], dinnerCount['안먹음']],
-              backgroundColor: '#ef4444'
+              backgroundColor: '#9C2B1B',
+              borderRadius: 6
             }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { font: { family: "'Pretendard', sans-serif", weight: '600', size: 11 }, color: '#37352F', usePointStyle: true, boxWidth: 8 }
+            }
+          },
           scales: {
-            x: { stacked: true },
-            y: { stacked: true, beginAtZero: true, title: { display: true, text: '일수 (일)' } }
+            x: {
+              stacked: true,
+              grid: { display: false },
+              ticks: { font: { family: "'Pretendard', sans-serif", size: 11 }, color: '#787774' }
+            },
+            y: {
+              stacked: true,
+              beginAtZero: true,
+              grid: { color: '#ECE7DE' },
+              ticks: { font: { family: "'JetBrains Mono', monospace", size: 11 }, color: '#787774' }
+            }
           }
         }
       });

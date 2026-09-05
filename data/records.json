@@ -1,0 +1,218 @@
+[
+  {
+    "id": "2026-08-29",
+    "date": "2026-08-29",
+    "dayOfWeek": "토요일",
+    "medicines": [
+      {
+        "name": "메디키넷",
+        "dosage": "10mg"
+      }
+    ],
+    "medTimePeriod": "오전",
+    "medTimeHour": "08",
+    "medTimeMinute": "30",
+    "medMealTiming": "식후 30분",
+    "medNote": "물과 함께 복용",
+    "wakePeriod": "오전",
+    "wakeHour": "07",
+    "wakeMinute": "30",
+    "sleepPeriod": "오후",
+    "sleepHour": "10",
+    "sleepMinute": "30",
+    "sleepLatency": "15분 이내 (원활)",
+    "sleepWaking": "없음 (숙면)",
+    "mealBreakfast": "정상",
+    "mealLunch": "평소의 70%",
+    "mealDinner": "정상",
+    "taskStartReaction": "스스로 시작",
+    "mathProblemCount": 15,
+    "mathTotalDuration": 30,
+    "mathFocusDuration": 15,
+    "distractionLevel": "보통",
+    "mathObservationMemo": "초반 10분 후 집중 흐려짐",
+    "overallMood": "불안",
+    "irritationFreq": "적음",
+    "reboundEffect": "보통",
+    "angerTrigger": "",
+    "symptoms": [
+      "눈 깜빡임"
+    ],
+    "specialMemo": "새 학기 첫 주라 다소 긴장한 모습. 4시 수학 문제 풀 때 초반 10분 후 집중 흐려짐.",
+    "updatedAt": "2026-08-29T21:00:00.000Z"
+  },
+  {
+    "id": "2026-08-30",
+    "date": "2026-08-30",
+    "dayOfWeek": "일요일",
+    "medicines": [
+      {
+        "name": "메디키넷",
+        "dosage": "10mg"
+      }
+    ],
+    "medTimePeriod": "오전",
+    "medTimeHour": "08",
+    "medTimeMinute": "30",
+    "medMealTiming": "식후 30분",
+    "medNote": "물과 함께 복용",
+    "wakePeriod": "오전",
+    "wakeHour": "07",
+    "wakeMinute": "30",
+    "sleepPeriod": "오후",
+    "sleepHour": "10",
+    "sleepMinute": "30",
+    "sleepLatency": "15분 이내 (원활)",
+    "sleepWaking": "없음 (숙면)",
+    "mealBreakfast": "정상",
+    "mealLunch": "정상",
+    "mealDinner": "정상",
+    "taskStartReaction": "스스로 시작",
+    "mathProblemCount": 18,
+    "mathTotalDuration": 30,
+    "mathFocusDuration": 18,
+    "distractionLevel": "적음",
+    "mathObservationMemo": "문제 풀이 차분히 진행",
+    "overallMood": "평온",
+    "irritationFreq": "적음",
+    "reboundEffect": "없음",
+    "angerTrigger": "",
+    "symptoms": [],
+    "specialMemo": "어제보다 차분하게 문제 풀이 진행함. 칭찬 많이 해줌.",
+    "updatedAt": "2026-08-30T21:00:00.000Z"
+  },
+  {
+    "id": "2026-08-31",
+    "date": "2026-08-31",
+    "dayOfWeek": "월요일",
+    "medicines": [
+      {
+        "name": "메디키넷",
+        "dosage": "10mg"
+      },
+      {
+        "name": "아빌리파이",
+        "dosage": "0.5mg"
+      }
+    ],
+    "medTimePeriod": "오전",
+    "medTimeHour": "08",
+    "medTimeMinute": "30",
+    "medMealTiming": "식후 30분",
+    "medNote": "물과 함께 복용",
+    "wakePeriod": "오전",
+    "wakeHour": "07",
+    "wakeMinute": "30",
+    "sleepPeriod": "오후",
+    "sleepHour": "10",
+    "sleepMinute": "30",
+    "sleepLatency": "15분 이내 (원활)",
+    "sleepWaking": "없음 (숙면)",
+    "mealBreakfast": "정상",
+    "mealLunch": "정상",
+    "mealDinner": "정상",
+    "taskStartReaction": "스스로 시작",
+    "mathProblemCount": 20,
+    "mathTotalDuration": 30,
+    "mathFocusDuration": 22,
+    "distractionLevel": "적음",
+    "mathObservationMemo": "집중 유지 잘 됨",
+    "overallMood": "밝음",
+    "irritationFreq": "적음",
+    "reboundEffect": "없음",
+    "angerTrigger": "",
+    "symptoms": [
+      "입 마름"
+    ],
+    "specialMemo": "메디키넷과 아빌리파이(0.5mg) 병용 시작. 주의 분산 횟수 확연히 줄어듦. 물 자주 마심.",
+    "updatedAt": "2026-08-31T21:00:00.000Z"
+  },
+  {
+    "id": "2026-09-01",
+    "date": "2026-09-01",
+    "dayOfWeek": "화요일",
+    "medicines": [
+      {
+        "name": "메디키넷",
+        "dosage": "10mg"
+      },
+      {
+        "name": "아빌리파이",
+        "dosage": "0.5mg"
+      }
+    ],
+    "medTimePeriod": "오전",
+    "medTimeHour": "08",
+    "medTimeMinute": "30",
+    "medMealTiming": "식후 30분",
+    "medNote": "물과 함께 복용",
+    "wakePeriod": "오전",
+    "wakeHour": "07",
+    "wakeMinute": "30",
+    "sleepPeriod": "오후",
+    "sleepHour": "10",
+    "sleepMinute": "30",
+    "sleepLatency": "15분 이내 (원활)",
+    "sleepWaking": "없음 (숙면)",
+    "mealBreakfast": "정상",
+    "mealLunch": "평소의 70%",
+    "mealDinner": "정상",
+    "taskStartReaction": "스스로 시작",
+    "mathProblemCount": 24,
+    "mathTotalDuration": 30,
+    "mathFocusDuration": 25,
+    "distractionLevel": "적음",
+    "mathObservationMemo": "문제 풀이 성취도 높음",
+    "overallMood": "밝음",
+    "irritationFreq": "적음",
+    "reboundEffect": "없음",
+    "angerTrigger": "",
+    "symptoms": [],
+    "specialMemo": "오후 4시 수학 테스트에서 스스로 문제집을 펼치고 25분간 몰입함.",
+    "updatedAt": "2026-09-01T21:00:00.000Z"
+  },
+  {
+    "id": "2026-09-02",
+    "date": "2026-09-02",
+    "dayOfWeek": "수요일",
+    "medicines": [
+      {
+        "name": "메디키넷",
+        "dosage": "10mg"
+      },
+      {
+        "name": "아빌리파이",
+        "dosage": "1mg"
+      }
+    ],
+    "medTimePeriod": "오전",
+    "medTimeHour": "08",
+    "medTimeMinute": "30",
+    "medMealTiming": "식후 30분",
+    "medNote": "물과 함께 복용",
+    "wakePeriod": "오전",
+    "wakeHour": "07",
+    "wakeMinute": "30",
+    "sleepPeriod": "오후",
+    "sleepHour": "10",
+    "sleepMinute": "30",
+    "sleepLatency": "15분 이내 (원활)",
+    "sleepWaking": "없음 (숙면)",
+    "mealBreakfast": "정상",
+    "mealLunch": "정상",
+    "mealDinner": "정상",
+    "taskStartReaction": "스스로 시작",
+    "mathProblemCount": 25,
+    "mathTotalDuration": 30,
+    "mathFocusDuration": 28,
+    "distractionLevel": "적음",
+    "mathObservationMemo": "몰입 상태 아주 훌륭함",
+    "overallMood": "밝음",
+    "irritationFreq": "적음",
+    "reboundEffect": "없음",
+    "angerTrigger": "",
+    "symptoms": [],
+    "specialMemo": "오늘 컨디션 매우 좋음. 모바일 테스트 완료.",
+    "updatedAt": "2026-09-02T14:27:07.872Z"
+  }
+]

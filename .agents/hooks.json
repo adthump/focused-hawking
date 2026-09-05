@@ -1,0 +1,12 @@
+{
+  "woohyun-tracker-guard": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node .agents/scripts/hook_validator.js",
+        "timeout": 10
+      }
+    ]
+  }
+}

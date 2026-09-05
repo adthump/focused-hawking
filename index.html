@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>우현이 일일 관찰 기록 & 변화 분석 시스템</title>
+  <!-- Mobile Web App & PWA Settings -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="우현이 관찰일지" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#2563eb" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SheetJS (xlsx) CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- QRCode CDN (Standard qrcodejs) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      body {
+        background: white !important;
+        font-size: 12pt;
+      }
+      .print-card {
+        box-shadow: none !important;
+        border: 1px solid #e2e8f0 !important;
+        break-inside: avoid;
+      }
+    }
+    .tag-btn.active {
+      background-color: #3b82f6;
+      color: white;
+      border-color: #2563eb;
+    }
+    /* Touch optimization for mobile buttons */
+    .touch-manipulation {
+      touch-action: manipulation;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col pb-20 md:pb-0">
+
+  <!-- Top Header Navigation -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm no-print">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16">
+        <!-- Logo & Title & Sync Badge -->
+        <div class="flex items-center space-x-2.5 sm:space-x-3">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0">
+            <i data-lucide="clipboard-check" class="w-5 h-5 sm:w-6 sm:h-6"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-base sm:text-xl font-bold text-slate-900 leading-tight">우현이 관찰 기록표</h1>
+              <span id="syncStatusBadge" class="hidden sm:inline-flex items-center space-x-1 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="syncStatusText">동기화 중...</span>
+              </span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-slate-500 hidden sm:block">약물 반응 · 집중도 · 수면 & 기분 변화 추적</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs (Desktop) -->
+        <nav class="hidden md:flex items-center space-x-1 sm:space-x-2 bg-slate-100 p-1 rounded-xl">
+          <button onclick="switchTab('record')" id="tab-record" class="tab-btn px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all bg-white text-blue-600 shadow-sm">
+            <i data-lucide="edit-3" class="w-4 h-4 inline-block mr-1"></i>일일 기록
+          </button>
+          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all text-slate-600 hover:text-slate-900">
+            <i data-lucide="line-chart" class="w-4 h-4 inline-block mr-1"></i>변화 분석 차트
+          </button>
+          <button onclick="switchTab('table')" id="tab-table" class="tab-btn px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all text-slate-600 hover:text-slate-900">
+            <i data-lucide="table" class="w-4 h-4 inline-block mr-1"></i>전체 기록표
+          </button>
+        </nav>
+
+        <!-- Header Actions: Mobile QR, Excel Export & Import -->
+        <div class="flex items-center space-x-1.5 sm:space-x-2">
+          <!-- Mobile Connect QR Button -->
+          <button onclick="openMobileQrModal()" title="핸드폰(스마트폰)으로 접속하기 위한 QR 코드 및 Wi-Fi 주소 확인" class="flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs sm:text-sm font-semibold rounded-lg border border-indigo-200 shadow-xs transition">
+            <i data-lucide="smartphone" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600"></i>
+            <span>핸드폰 접속</span>
+          </button>
+
+          <!-- Excel Download -->
+          <button onclick="exportToExcel()" title="모든 기록을 엑셀(.xlsx) 파일로 다운로드" class="flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-medium rounded-lg shadow-sm transition">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+            <span class="hidden lg:inline">엑셀 다운로드</span>
+          </button>
+
+          <!-- Excel / JSON Import -->
+          <label class="flex items-center space-x-1 px-2 sm:px-3 py-1.5 sm:py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium rounded-lg cursor-pointer transition border border-slate-300">
+            <i data-lucide="upload" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+            <span class="hidden lg:inline">불러오기</span>
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls, .json" class="hidden" onchange="importData(event)" />
+          </label>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ================================================================= -->
+    <!-- TAB 1: 📝 일일 관찰 기록 입력 폼 -->
+    <!-- ================================================================= -->
+    <section id="section-record" class="space-y-6">
+      
+      <!-- Date Banner & Navigation -->
+      <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-5 sm:p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-4">
+          <div class="p-3 bg-white/15 backdrop-blur-md rounded-2xl border border-white/20">
+            <i data-lucide="calendar" class="w-8 h-8 text-white"></i>
+          </div>
+          <div>
+            <div class="text-xs font-medium text-blue-100 uppercase tracking-wider">컴퓨터 자동 날짜 연동</div>
+            <div class="flex items-center space-x-3 mt-1">
+              <input type="date" id="recordDate" class="bg-white/20 hover:bg-white/30 text-white font-bold text-lg sm:text-xl px-3 py-1.5 rounded-lg border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition cursor-pointer [color-scheme:dark]" onchange="onDateChanged()" />
+              <span id="dayOfWeekBadge" class="px-2.5 py-1 bg-white/20 text-white text-sm font-semibold rounded-md border border-white/20">수요일</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Date Navigator & Status Indicator -->
+        <div class="flex items-center space-x-2 w-full md:w-auto justify-between md:justify-end">
+          <div class="flex items-center space-x-1 bg-white/15 p-1 rounded-xl border border-white/20">
+            <button onclick="changeDateByDays(-1)" class="p-1.5 hover:bg-white/20 rounded-lg transition" title="어제">
+              <i data-lucide="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <button onclick="setToday()" class="px-3 py-1 text-xs font-semibold hover:bg-white/20 rounded-lg transition">
+              오늘
+            </button>
+            <button onclick="changeDateByDays(1)" class="p-1.5 hover:bg-white/20 rounded-lg transition" title="내일">
+              <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+          </div>
+          <div id="recordStatusBadge" class="text-xs px-3 py-1.5 rounded-full font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30 flex items-center space-x-1">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>새 기록 작성 중</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Form Grid -->
+      <form id="observationForm" onsubmit="saveRecord(event)" class="space-y-6">
+        
+        <!-- SECTION 1: 1. 투약 기본 정보 -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 transition-all hover:shadow-md">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm">1</div>
+              <h2 class="text-base sm:text-lg font-bold text-slate-800">투약 기본 정보</h2>
+            </div>
+            <span class="text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">중복 투약 가능 (+ 약 추가)</span>
+          </div>
+
+          <!-- Medicine List Container (Dynamic Multiple Medicines) -->
+          <div class="space-y-3">
+            <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider">
+              약 종류 및 용량 <span class="text-rose-500">*</span>
+            </label>
+            <div id="medicineList" class="space-y-2.5">
+              <!-- Dynamically populated medicine rows -->
+            </div>
+            
+            <button type="button" onclick="addMedicineRow()" class="mt-2 inline-flex items-center space-x-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3.5 py-2 rounded-xl transition border border-blue-200">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>+ 약 추가 (메디키넷, 콘서타, 아빌리파이 등 동시 복용 시 클릭)</span>
+            </button>
+          </div>
+
+          <!-- Dosage Timing & Condition -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 pt-4 border-t border-slate-100">
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">투약 시간</label>
+              <div class="flex items-center space-x-2">
+                <select id="medTimePeriod" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                  <option value="오전" selected>오전</option>
+                  <option value="오후">오후</option>
+                </select>
+                <input type="text" id="medTimeHour" placeholder="08" value="08" class="w-16 bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-2.5 py-2 text-center focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                <span class="text-slate-400 font-semibold">:</span>
+                <input type="text" id="medTimeMinute" placeholder="30" value="30" class="w-16 bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-2.5 py-2 text-center focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">식전 / 식후 여부</label>
+              <select id="medMealTiming" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <option value="식후 30분">식후 30분 (권장)</option>
+                <option value="식후 즉시">식후 즉시</option>
+                <option value="식전 30분">식전 30분</option>
+                <option value="식간(공복)">식간 (공복)</option>
+                <option value="기타">기타</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">투약 관련 메모 (선택)</label>
+              <input type="text" id="medNote" placeholder="예: 물 충분히 섭취, 간식 후 복용 등" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 2: 2. 수면 & 식사 -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 transition-all hover:shadow-md">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm">2</div>
+              <h2 class="text-base sm:text-lg font-bold text-slate-800">수면 & 식사</h2>
+            </div>
+            <span class="text-xs text-indigo-600 bg-indigo-50 font-medium px-2.5 py-1 rounded-full">생체 리듬 체크</span>
+          </div>
+
+          <!-- Sleep Section -->
+          <div class="mb-6">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center space-x-1.5">
+              <i data-lucide="moon" class="w-4 h-4 text-indigo-500"></i>
+              <span>수면 패턴</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <!-- Wake up time -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">기상 시간</label>
+                <div class="flex items-center space-x-1.5">
+                  <select id="wakePeriod" class="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2 py-2">
+                    <option value="오전" selected>오전</option>
+                    <option value="오후">오후</option>
+                  </select>
+                  <input type="text" id="wakeHour" value="07" class="w-12 text-center bg-slate-50 border border-slate-200 text-sm rounded-lg py-2 font-medium" />
+                  <span class="text-slate-400">:</span>
+                  <input type="text" id="wakeMinute" value="30" class="w-12 text-center bg-slate-50 border border-slate-200 text-sm rounded-lg py-2 font-medium" />
+                </div>
+              </div>
+
+              <!-- Sleep time -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">취침 시간</label>
+                <div class="flex items-center space-x-1.5">
+                  <select id="sleepPeriod" class="bg-slate-50 border border-slate-200 text-xs rounded-lg px-2 py-2">
+                    <option value="오후" selected>오후</option>
+                    <option value="오전">오전</option>
+                  </select>
+                  <input type="text" id="sleepHour" value="10" class="w-12 text-center bg-slate-50 border border-slate-200 text-sm rounded-lg py-2 font-medium" />
+                  <span class="text-slate-400">:</span>
+                  <input type="text" id="sleepMinute" value="30" class="w-12 text-center bg-slate-50 border border-slate-200 text-sm rounded-lg py-2 font-medium" />
+                </div>
+              </div>
+
+              <!-- Time to fall asleep -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">잠드는 데 걸린 시간</label>
+                <select id="sleepLatency" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="15분 이내 (원활)">15분 이내 (원활)</option>
+                  <option value="15~30분 (보통)">15~30분 (보통)</option>
+                  <option value="30분~1시간 (지연)">30분~1시간 (지연)</option>
+                  <option value="1시간 이상 (불면/어려움)">1시간 이상 (불면/어려움)</option>
+                </select>
+              </div>
+
+              <!-- Mid-sleep waking -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1.5">수면 중 깸 여부</label>
+                <select id="sleepWaking" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="없음 (숙면)">없음 (숙면)</option>
+                  <option value="1회 (화장실/물 등)">1회 (화장실/물 등)</option>
+                  <option value="2~3회 (뒤척임)">2~3회 (뒤척임)</option>
+                  <option value="자주 깸 / 악몽">자주 깸 / 악몽</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Meals Section -->
+          <div class="pt-4 border-t border-slate-100">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center space-x-1.5">
+              <i data-lucide="utensils" class="w-4 h-4 text-emerald-500"></i>
+              <span>식사량 (약물 복용 후 식욕 변화 관찰)</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <!-- Breakfast -->
+              <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/70">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-700">🍳 아침 식사</span>
+                </div>
+                <select id="mealBreakfast" class="w-full bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="정상">정상 (잘 먹음)</option>
+                  <option value="평소의 70%">평소의 70%</option>
+                  <option value="거의 안 먹음">거의 안 먹음 (식욕 저하)</option>
+                </select>
+              </div>
+
+              <!-- Lunch -->
+              <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/70">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-700">🍱 점심 식사 (약효 피크)</span>
+                </div>
+                <select id="mealLunch" class="w-full bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="정상">정상 (잘 먹음)</option>
+                  <option value="평소의 70%">평소의 70%</option>
+                  <option value="거의 안 먹음">거의 안 먹음 (식욕 저하)</option>
+                </select>
+              </div>
+
+              <!-- Dinner -->
+              <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/70">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold text-slate-700">🍲 저녁 식사</span>
+                </div>
+                <select id="mealDinner" class="w-full bg-white border border-slate-200 text-slate-700 text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                  <option value="정상">정상 (잘 먹음)</option>
+                  <option value="평소의 70%">평소의 70%</option>
+                  <option value="거의 안 먹음">거의 안 먹음 (식욕 저하)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: 3. 오후 4시 집중도 테스트 (수학 문제 풀기) -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 transition-all hover:shadow-md">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-sm">3</div>
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-800">오후 4시 집중도 테스트 (수학 문제 풀기)</h2>
+                <p class="text-xs text-slate-500">약물 투약 후 일정한 시간(오후 4시)에 학습 집중도 측정</p>
+              </div>
+            </div>
+            <span class="text-xs text-amber-700 bg-amber-50 font-medium px-2.5 py-1 rounded-full">학습 집중도 지표</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Task Start Response -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">과제 시작 반응</label>
+              <select id="taskStartReaction" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                <option value="스스로 시작">스스로 시작 (자발적)</option>
+                <option value="가벼운 독려">가벼운 독려 후 시작</option>
+                <option value="심한 거부">심한 거부 / 떼씀 / 미룸</option>
+              </select>
+            </div>
+
+            <!-- Solved Problems Count & Duration -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                푼 문제 수 & 총 소요 시간
+              </label>
+              <div class="flex items-center space-x-2">
+                <div class="relative flex-1">
+                  <input type="number" id="mathProblemCount" min="0" max="9999" placeholder="20" value="20" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl pl-3 pr-7 py-2 font-bold focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+                  <span class="absolute right-2.5 top-2.5 text-xs text-slate-400 font-semibold">문제</span>
+                </div>
+                <div class="relative flex-1">
+                  <input type="number" id="mathTotalDuration" min="0" max="9999" placeholder="30" value="30" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl pl-3 pr-7 py-2 font-bold focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+                  <span class="absolute right-2.5 top-2.5 text-xs text-slate-400 font-semibold">분</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Continuous Focus Duration -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+                지속 집중 시간 (딴짓 없이 몰입)
+              </label>
+              <div class="relative">
+                <input type="number" id="mathFocusDuration" min="0" max="9999" placeholder="20" value="20" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-xl pl-3 pr-8 py-2 font-bold text-amber-600 focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+                <span class="absolute right-3 top-2.5 text-xs text-slate-500 font-bold">분</span>
+              </div>
+            </div>
+
+            <!-- Distraction Count -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">주의 분산 횟수</label>
+              <select id="distractionLevel" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                <option value="적음">적음 (1~2회)</option>
+                <option value="보통">보통 (3~5회)</option>
+                <option value="잦음">잦음 (6회 이상 / 계속 이탈)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100">
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">수학 테스트 관찰 상세 메모 (선택)</label>
+            <input type="text" id="mathObservationMemo" placeholder="예: 초반 15분간 매우 몰입, 후반부에 지우개 장난, 연산 정확도 우수 등" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-amber-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <!-- SECTION 4: 4. 감정 및 기분 -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 transition-all hover:shadow-md">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-sm">4</div>
+              <h2 class="text-base sm:text-lg font-bold text-slate-800">감정 및 기분</h2>
+            </div>
+            <span class="text-xs text-rose-600 bg-rose-50 font-medium px-2.5 py-1 rounded-full">정서 & 리바운드 체크</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Overall Mood -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">전반적인 기분</label>
+              <select id="overallMood" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                <option value="밝음">😊 밝음 (매우 긍정적/활기참)</option>
+                <option value="평온" selected>😌 평온 (안정적)</option>
+                <option value="불안">😟 불안 / 예민함</option>
+                <option value="가라앉음">😢 가라앉음 / 무기력</option>
+              </select>
+            </div>
+
+            <!-- Irritation / Anger Frequency -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">짜증 / 화 빈도</label>
+              <select id="irritationFreq" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                <option value="적음">적음 (거의 안 냄)</option>
+                <option value="보통">보통 (1~2회 가벼운 투정)</option>
+                <option value="많음">많음 (3회 이상 / 감정 조절 어려움)</option>
+              </select>
+            </div>
+
+            <!-- Rebound Effect in Evening -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-600 mb-1.5">저녁 약효 빠질 때 (리바운드)</label>
+              <select id="reboundEffect" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                <option value="없음">없음 (자연스럽게 전환)</option>
+                <option value="보통">보통 (약간 예민/칭얼댐)</option>
+                <option value="짜증 심함">짜증 심함 (분노 폭발/과행동 급증)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Anger Trigger Situation -->
+          <div class="mt-4">
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">분노 유발 상황 (언제, 왜 화를 냈는지)</label>
+            <input type="text" id="angerTrigger" placeholder="예: 숙제 더 하라고 했을 때, 원하는 장난감을 동생이 가져갔을 때 등" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-rose-500 focus:outline-none" />
+          </div>
+        </div>
+
+        <!-- SECTION 5: 5. 신체 증상 & 특이사항 -->
+        <div class="bg-white rounded-2xl p-5 sm:p-6 shadow-sm border border-slate-200/80 transition-all hover:shadow-md">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-sm">5</div>
+              <h2 class="text-base sm:text-lg font-bold text-slate-800">신체 증상 & 특이사항</h2>
+            </div>
+            <span class="text-xs text-emerald-600 bg-emerald-50 font-medium px-2.5 py-1 rounded-full">부작용 & 행동 관찰</span>
+          </div>
+
+          <!-- Body Symptoms Tags -->
+          <div class="space-y-3">
+            <label class="block text-xs font-semibold text-slate-600">
+              신체 증상 (해당되는 항목을 모두 클릭하여 체크하세요)
+            </label>
+            <div class="flex flex-wrap gap-2" id="symptomTagsContainer">
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="두통" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🤕 두통</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="복통" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🤢 복통 / 소화불량</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="가슴 두근거림" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">💓 가슴 두근거림</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="입 마름" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">💧 입 마름 / 갈증</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="눈 깜빡임" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">👀 눈 깜빡임 (틱)</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="음성 틱" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🗣️ 음성 틱 (헛기침/음음 소리)</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="손 떨림" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🖐️ 손 떨림</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="어지러움" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">💫 어지러움</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="손톱 물어뜯기" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">💅 손톱 물어뜯기</button>
+              <button type="button" onclick="toggleSymptomTag(this)" data-symptom="다리 떨기" class="tag-btn px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 transition">🦵 다리 떨기</button>
+            </div>
+            
+            <div class="mt-2">
+              <input type="text" id="customSymptom" placeholder="기타 신체 증상이나 반복 동작이 있다면 직접 입력하세요" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-xl px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+            </div>
+          </div>
+
+          <!-- Special Notes Memo -->
+          <div class="mt-4 pt-4 border-t border-slate-100">
+            <label class="block text-xs font-semibold text-slate-600 mb-1.5">
+              📝 특이사항 메모 (선생님 상담 내용, 학교 생활, 칭찬할 점 등 자유 기록)
+            </label>
+            <textarea id="specialMemo" rows="3" placeholder="오늘 하루 우현이의 특별했던 점, 선생님 피드백, 칭찬할 행동, 보호자 소감 등을 자유롭게 기록하세요." class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl p-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+          </div>
+        </div>
+
+        <!-- Sticky Save Action Bar -->
+        <div class="sticky bottom-4 z-20 bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-slate-200/90 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center space-x-2 text-xs text-slate-500">
+            <i data-lucide="info" class="w-4 h-4 text-blue-500"></i>
+            <span id="saveHint">저장 시 컴퓨터 브라우저에 안전하게 보관됩니다.</span>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button type="button" onclick="deleteCurrentRecord()" id="deleteBtn" class="hidden px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 text-sm font-semibold rounded-xl border border-rose-200 transition">
+              <i data-lucide="trash-2" class="w-4 h-4 inline-block mr-1"></i>삭제
+            </button>
+            <button type="button" onclick="resetForm()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition">
+              <i data-lucide="rotate-ccw" class="w-4 h-4 inline-block mr-1"></i>초기화
+            </button>
+            <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-bold rounded-xl shadow-md shadow-blue-500/25 transition transform active:scale-95 flex items-center space-x-2">
+              <i data-lucide="save" class="w-4 h-4"></i>
+              <span id="saveBtnText">기록 저장하기</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 2: 📊 변화 추이 & 통계 분석 (대시보드) -->
+    <!-- ================================================================= -->
+    <section id="section-dashboard" class="space-y-6 hidden">
+      <!-- Filter Bar -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">우현이의 변화 추이 분석 차트</h2>
+          <p class="text-xs text-slate-500">투약 및 날짜별 집중도, 식사량, 기분 및 리바운드 패턴을 시각화합니다.</p>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-semibold text-slate-600">분석 기간:</span>
+          <select id="chartPeriodFilter" onchange="updateDashboardCharts()" class="bg-slate-50 border border-slate-200 text-xs font-semibold rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <option value="7">최근 7일</option>
+            <option value="14" selected>최근 14일</option>
+            <option value="30">최근 30일</option>
+            <option value="all">전체 기간</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Average Focus Duration -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500">평균 지속 집중</span>
+            <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+              <i data-lucide="timer" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-2 flex items-baseline space-x-1.5">
+            <span id="kpiAvgFocus" class="text-2xl font-extrabold text-slate-900">0</span>
+            <span class="text-xs font-bold text-slate-500">분</span>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1">4시 수학 집중도 테스트 기준</div>
+        </div>
+
+        <!-- Average Solved Problems -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500">평균 푼 문제 수</span>
+            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center">
+              <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-2 flex items-baseline space-x-1.5">
+            <span id="kpiAvgProblems" class="text-2xl font-extrabold text-slate-900">0</span>
+            <span class="text-xs font-bold text-slate-500">문제</span>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1">일일 평균 풀이량</div>
+        </div>
+
+        <!-- Meal Score -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500">점심 식사 유지율</span>
+            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+              <i data-lucide="utensils" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-2 flex items-baseline space-x-1.5">
+            <span id="kpiLunchRate" class="text-2xl font-extrabold text-slate-900">0%</span>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1">약효 피크 시간 식사량 정상 비율</div>
+        </div>
+
+        <!-- Rebound Severity -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-500">저녁 리바운드 없음</span>
+            <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
+              <i data-lucide="smile" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="mt-2 flex items-baseline space-x-1.5">
+            <span id="kpiNoReboundRate" class="text-2xl font-extrabold text-slate-900">0%</span>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1">저녁 감정 기복 없는 안정일 비율</div>
+        </div>
+      </div>
+
+      <!-- Charts Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Chart 1: Focus Duration & Math Problems Trend -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="trending-up" class="w-5 h-5 text-amber-500"></i>
+              <h3 class="font-bold text-slate-800 text-sm sm:text-base">일자별 지속 집중 시간 & 푼 문제 수</h3>
+            </div>
+            <span class="text-[11px] text-slate-400">선: 집중시간(분) / 막대: 문제 수</span>
+          </div>
+          <div class="h-64 relative">
+            <canvas id="focusChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 2: Mood & Rebound Trend -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="heart-pulse" class="w-5 h-5 text-rose-500"></i>
+              <h3 class="font-bold text-slate-800 text-sm sm:text-base">일자별 기분 및 저녁 리바운드 강도</h3>
+            </div>
+            <span class="text-[11px] text-slate-400">기분 점수 vs 짜증/리바운드</span>
+          </div>
+          <div class="h-64 relative">
+            <canvas id="moodChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 3: Medicine vs Focus Correlation -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="pill" class="w-5 h-5 text-blue-500"></i>
+              <h3 class="font-bold text-slate-800 text-sm sm:text-base">약물 조합별 평균 지속 집중 시간</h3>
+            </div>
+            <span class="text-[11px] text-slate-400">투약 조합별 효과 비교</span>
+          </div>
+          <div class="h-64 relative">
+            <canvas id="medicationChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart 4: Meal Consumption Distribution -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="pie-chart" class="w-5 h-5 text-emerald-500"></i>
+              <h3 class="font-bold text-slate-800 text-sm sm:text-base">식사량 분포 (아침 / 점심 / 저녁)</h3>
+            </div>
+            <span class="text-[11px] text-slate-400">식욕 저하 빈도 분석</span>
+          </div>
+          <div class="h-64 relative">
+            <canvas id="mealChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB 3: 📜 전체 기록표 & 데이터 관리 -->
+    <!-- ================================================================= -->
+    <section id="section-table" class="space-y-6 hidden">
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">우현이 관찰 기록 히스토리</h2>
+          <p class="text-xs text-slate-500">기록된 모든 일일 관찰 일지를 열람하고, 수정하거나 엑셀로 내보낼 수 있습니다.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button onclick="exportToExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold rounded-xl shadow-sm transition flex items-center space-x-1.5">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>전체 엑셀(.xlsx) 내보내기</span>
+          </button>
+          <button onclick="loadSampleData()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl border border-slate-300 transition flex items-center space-x-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+            <span>샘플 데이터 추가</span>
+          </button>
+          <button onclick="clearAllData()" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs sm:text-sm font-semibold rounded-xl border border-rose-200 transition flex items-center space-x-1.5">
+            <i data-lucide="trash" class="w-4 h-4"></i>
+            <span>전체 삭제</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Table & Mobile Cards Container -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        
+        <!-- Desktop Table View (md 이상) -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm text-slate-600">
+            <thead class="bg-slate-50 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+              <tr>
+                <th class="px-4 py-3.5">날짜 (요일)</th>
+                <th class="px-4 py-3.5">투약 정보 (약/용량)</th>
+                <th class="px-4 py-3.5">수면 시간</th>
+                <th class="px-4 py-3.5">식사 (아침/점심/저녁)</th>
+                <th class="px-4 py-3.5">4시 수학 집중도</th>
+                <th class="px-4 py-3.5">기분 / 리바운드</th>
+                <th class="px-4 py-3.5">신체 증상 / 메모</th>
+                <th class="px-4 py-3.5 text-center">관리</th>
+              </tr>
+            </thead>
+            <tbody id="recordsTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card List View (md 미만 모바일 전용) -->
+        <div id="mobileCardsContainer" class="block md:hidden divide-y divide-slate-100 p-3 space-y-3">
+          <!-- Dynamically populated mobile cards -->
+        </div>
+
+        <div id="emptyTableMessage" class="py-12 text-center text-slate-400 hidden">
+          <i data-lucide="clipboard-list" class="w-12 h-12 mx-auto text-slate-300 mb-2"></i>
+          <p class="text-sm">아직 저장된 관찰 기록이 없습니다.</p>
+          <button onclick="switchTab('record')" class="mt-3 text-xs font-bold text-blue-600 hover:underline">오늘의 첫 기록 작성하러 가기 &rarr;</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Fixed Bottom Navigation Bar (스마트폰 전용 하단 탭 바) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around shadow-xl no-print">
+    <button onclick="switchTab('record')" id="mobile-tab-record" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-blue-600 font-bold transition">
+      <i data-lucide="edit-3" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[11px]">일일 기록</span>
+    </button>
+    <button onclick="switchTab('dashboard')" id="mobile-tab-dashboard" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-500 font-medium transition">
+      <i data-lucide="line-chart" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[11px]">변화 분석</span>
+    </button>
+    <button onclick="switchTab('table')" id="mobile-tab-table" class="mobile-tab-btn flex flex-col items-center justify-center flex-1 py-1 text-slate-500 font-medium transition">
+      <i data-lucide="list" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[11px]">기록 목록</span>
+    </button>
+    <button onclick="openMobileQrModal()" class="flex flex-col items-center justify-center flex-1 py-1 text-slate-500 hover:text-indigo-600 font-medium transition">
+      <i data-lucide="smartphone" class="w-5 h-5 mb-0.5"></i>
+      <span class="text-[11px]">QR 접속</span>
+    </button>
+  </nav>
+
+  <!-- Mobile QR Connect Modal (스마트폰 접속 안내 팝업) -->
+  <div id="mobileQrModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden transition-opacity">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeMobileQrModal()" class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-3 shadow-sm">
+          <i data-lucide="smartphone" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900">핸드폰(스마트폰)으로 접속하기</h3>
+        <p class="text-xs text-slate-500 mt-1">집에서 컴퓨터와 <strong>같은 Wi-Fi</strong>에 연결된 상태에서 카메라로 비추면 바로 열립니다.</p>
+      </div>
+
+      <!-- QR Code Display Area -->
+      <div class="mt-4 p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col items-center justify-center">
+        <div id="qrcodeCanvas" class="bg-white p-3 rounded-2xl shadow-xs border border-slate-200 min-w-[190px] min-h-[190px] flex items-center justify-center">
+          <img id="fallbackQrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=http%3A%2F%2F192.168.218.125%3A5500" alt="스마트폰 접속 QR 코드" class="w-[180px] h-[180px] rounded-lg" />
+        </div>
+        
+        <div class="mt-3 text-center w-full">
+          <div class="text-[11px] font-semibold text-slate-500 mb-1.5 flex items-center justify-center gap-1">
+            <i data-lucide="wifi" class="w-3.5 h-3.5 text-emerald-500"></i>
+            <span>스마트폰 브라우저 접속 주소:</span>
+          </div>
+          
+          <div class="flex items-center space-x-1.5 justify-center">
+            <code id="mobileUrlDisplay" class="bg-white px-3 py-1.5 rounded-xl border border-slate-300 text-xs sm:text-sm font-mono font-bold text-indigo-600 select-all shadow-xs">http://192.168.218.125:5500</code>
+            <button onclick="copyMobileUrl()" title="주소 복사" class="px-2.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition shadow-xs text-xs font-semibold flex items-center gap-1">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>복사</span>
+            </button>
+          </div>
+
+          <!-- IP Change Toggle / Options -->
+          <div class="mt-2.5 flex items-center justify-center gap-2">
+            <button type="button" onclick="toggleIpEdit()" class="text-[11px] font-semibold text-slate-500 hover:text-indigo-600 underline">
+              IP 주소가 다른가요? 직접 변경
+            </button>
+          </div>
+
+          <div id="customIpContainer" class="mt-2 hidden bg-white p-2.5 rounded-xl border border-slate-200">
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs text-slate-400 font-mono">http://</span>
+              <input type="text" id="customIpInput" value="192.168.218.125" placeholder="192.168.x.x" class="flex-1 bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg px-2 py-1.5 font-mono" />
+              <span class="text-xs text-slate-400 font-mono">:5500</span>
+              <button type="button" onclick="applyCustomIp()" class="px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition">
+                적용
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Steps Guide -->
+      <div class="mt-4 space-y-2 text-xs text-slate-600 bg-blue-50/80 p-3.5 rounded-2xl border border-blue-100">
+        <div class="font-bold text-blue-900 flex items-center gap-1.5">
+          <i data-lucide="check-circle-2" class="w-4 h-4 text-blue-600"></i>
+          <span>접속 3단계 가이드</span>
+        </div>
+        <ol class="list-decimal list-inside space-y-1 text-slate-700 leading-relaxed">
+          <li>핸드폰이 <strong>컴퓨터와 같은 집 Wi-Fi</strong>에 연결되어 있는지 확인합니다.</li>
+          <li>핸드폰 <strong>기본 카메라</strong>로 위 QR 코드를 비춥니다.</li>
+          <li>화면에 뜨는 주소 링크를 터치하면 모바일 화면이 바로 열립니다!</li>
+        </ol>
+      </div>
+
+      <div class="mt-4">
+        <button onclick="closeMobileQrModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition shadow-md">
+          닫기
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 no-print mt-auto">
+    <div class="max-w-7xl mx-auto px-4">
+      우현이 일일 관찰 기록표 &copy; 2026. PC 및 스마트폰에서 실시간 동기화되며 엑셀로 안전하게 백업할 수 있습니다.
+    </div>
+  </footer>
+
+  <!-- ================================================================= -->
+  <!-- JAVASCRIPT LOGIC -->
+  <!-- ================================================================= -->
+  <script>
+    // -------------------------------------------------------------
+    // Global State & Storage Keys
+    // -------------------------------------------------------------
+    const STORAGE_KEY = 'woohyun_observation_records_v1';
+    let records = [];
+    let currentRecordId = null;
+
+    // Default predefined medicine options
+    const DEFAULT_MEDICINES = ['메디키넷', '콘서타', '아빌리파이', '직접 입력'];
+
+    // Predefined medicine metadata with decimal support (Abilify, Medikinet, Concerta)
+    const MED_PRESETS = {
+      '메디키넷': {
+        defaultDosage: '10mg',
+        placeholder: '용량 (예: 10mg, 15mg)',
+        step: 5,
+        unit: 'mg',
+        chips: ['5mg', '10mg', '15mg', '20mg', '30mg', '40mg'],
+        datalist: ['5mg', '10mg', '15mg', '20mg', '25mg', '30mg', '40mg'],
+        label: '표준 용량'
+      },
+      '콘서타': {
+        defaultDosage: '18mg',
+        placeholder: '용량 (예: 18mg, 27mg)',
+        step: 9,
+        unit: 'mg',
+        chips: ['18mg', '27mg', '36mg', '45mg', '54mg'],
+        datalist: ['18mg', '27mg', '36mg', '45mg', '54mg'],
+        label: '표준 용량'
+      },
+      '아빌리파이': {
+        defaultDosage: '1mg',
+        placeholder: '소수점 용량 (예: 0.5mg, 1mg, 1.5mg)',
+        step: 0.5,
+        unit: 'mg',
+        chips: ['0.5mg', '1mg', '1.5mg', '2mg', '2.5mg', '3mg', '4mg', '5mg'],
+        datalist: ['0.25mg', '0.5mg', '0.75mg', '1mg', '1.25mg', '1.5mg', '1.75mg', '2mg', '2.5mg', '3mg', '3.5mg', '4mg', '5mg', '0.5정', '1정'],
+        label: '소수점 빠른 선택'
+      },
+      '직접 입력': {
+        defaultDosage: '10mg',
+        placeholder: '용량 직접 입력 (예: 0.5mg, 10mg, 0.5정)',
+        step: 1,
+        unit: 'mg',
+        chips: ['0.25mg', '0.5mg', '1mg', '5mg', '10mg', '0.5정', '1정'],
+        datalist: ['0.25mg', '0.5mg', '1mg', '5mg', '10mg', '18mg', '0.5정', '1정'],
+        label: '추천 단위'
+      }
+    };
+
+    // Korean Day of Week Names
+    const DAY_NAMES = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+
+    // Chart Instances
+    let focusChartInstance = null;
+    let moodChartInstance = null;
+    let medicationChartInstance = null;
+    let mealChartInstance = null;
+
+    // Server Sync State & QR
+    const DEFAULT_WIFI_IP = '192.168.218.125';
+    let isServerConnected = false;
+    let detectedIp = DEFAULT_WIFI_IP;
+    let serverMobileUrl = `http://${DEFAULT_WIFI_IP}:5500`;
+    let qrCodeInstance = null;
+
+    // -------------------------------------------------------------
+    // Initialization on Page Load
+    // -------------------------------------------------------------
+    document.addEventListener('DOMContentLoaded', async () => {
+      // 1. Initial local load
+      loadRecordsFromStorage();
+
+      // 2. Initialize Date to Today
+      setToday();
+
+      // 3. Try connecting to server for real-time PC-Mobile sync
+      await initServerSync();
+
+      // If storage and server are completely empty, insert initial rich sample data
+      if (records.length === 0) {
+        initSampleDataset();
+      }
+
+      // Initial render of tables & mobile cards
+      renderRecordsTable();
+
+      // Render Lucide icons
+      lucide.createIcons();
+    });
+
+    // -------------------------------------------------------------
+    // Real-Time Server Synchronization (PC <-> Mobile)
+    // -------------------------------------------------------------
+    function getApiBaseUrl() {
+      if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
+        return window.location.origin;
+      }
+      return 'http://localhost:5500';
+    }
+
+    async function initServerSync() {
+      const apiBase = getApiBaseUrl();
+      const statusBadge = document.getElementById('syncStatusBadge');
+      const statusText = document.getElementById('syncStatusText');
+
+      // Try fetching from current origin first, or localhost:5500, or default Wi-Fi IP
+      const candidateUrls = [
+        `${apiBase}/api/info`,
+        'http://localhost:5500/api/info',
+        `http://${DEFAULT_WIFI_IP}:5500/api/info`
+      ];
+
+      for (const targetUrl of candidateUrls) {
+        try {
+          const infoRes = await fetch(targetUrl, { cache: 'no-store' });
+          if (infoRes.ok) {
+            const info = await infoRes.json();
+            if (info && info.primaryIp && info.primaryIp !== '127.0.0.1') {
+              detectedIp = info.primaryIp;
+            } else {
+              detectedIp = DEFAULT_WIFI_IP;
+            }
+            serverMobileUrl = `http://${detectedIp}:5500`;
+            isServerConnected = true;
+
+            // Update UI badge
+            if (statusBadge && statusText) {
+              statusBadge.className = 'inline-flex items-center space-x-1 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200';
+              statusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span><span>실시간 동기화 (Wi-Fi)</span>`;
+            }
+
+            // Fetch records from server
+            await fetchRecordsFromServer();
+            return;
+          }
+        } catch (e) {
+          // continue checking next candidate
+        }
+      }
+
+      // Fallback mode (Standalone file or server offline)
+      isServerConnected = false;
+      serverMobileUrl = `http://${DEFAULT_WIFI_IP}:5500`;
+      if (statusBadge && statusText) {
+        statusBadge.className = 'inline-flex items-center space-x-1 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200';
+        statusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span>로컬 저장소 모드</span>`;
+      }
+    }
+
+    async function fetchRecordsFromServer() {
+      try {
+        const apiBase = getApiBaseUrl();
+        let res = null;
+        try {
+          res = await fetch(`${apiBase}/api/records`, { cache: 'no-store' });
+        } catch (err) {
+          res = await fetch('http://localhost:5500/api/records', { cache: 'no-store' });
+        }
+        if (res && res.ok) {
+          const data = await res.json();
+          if (data && Array.isArray(data.records) && data.records.length > 0) {
+            records = data.records;
+            saveRecordsToStorage(); // Cache to local storage
+            onDateChanged();
+            renderRecordsTable();
+            if (document.getElementById('section-dashboard') && !document.getElementById('section-dashboard').classList.contains('hidden')) {
+              updateDashboardCharts();
+            }
+          }
+        }
+      } catch (err) {
+        console.error('[Sync] Failed to fetch records from server:', err);
+      }
+    }
+
+    async function syncRecordToServer(recordObj) {
+      if (!isServerConnected) return false;
+      try {
+        const apiBase = getApiBaseUrl();
+        let res = null;
+        try {
+          res = await fetch(`${apiBase}/api/records`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(recordObj)
+          });
+        } catch (err) {
+          res = await fetch('http://localhost:5500/api/records', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(recordObj)
+          });
+        }
+        return res ? res.ok : false;
+      } catch (err) {
+        console.error('[Sync] Failed to sync record to server:', err);
+        return false;
+      }
+    }
+
+    async function deleteRecordFromServer(dateVal) {
+      if (!isServerConnected) return false;
+      try {
+        const apiBase = getApiBaseUrl();
+        const res = await fetch(`${apiBase}/api/records/${encodeURIComponent(dateVal)}`, {
+          method: 'DELETE'
+        });
+        return res.ok;
+      } catch (err) {
+        console.error('[Sync] Failed to delete record from server:', err);
+        return false;
+      }
+    }
+
+    async function importRecordsToServer(recordsArray) {
+      if (!isServerConnected) return false;
+      try {
+        const apiBase = getApiBaseUrl();
+        const res = await fetch(`${apiBase}/api/records/import`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ records: recordsArray })
+        });
+        return res.ok;
+      } catch (err) {
+        console.error('[Sync] Failed to import records to server:', err);
+        return false;
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Mobile QR Modal Operations
+    // -------------------------------------------------------------
+    function generateMobileQrCode(url) {
+      const container = document.getElementById('qrcodeCanvas');
+      const urlDisplay = document.getElementById('mobileUrlDisplay');
+      const customInput = document.getElementById('customIpInput');
+
+      if (urlDisplay) urlDisplay.textContent = url;
+      if (customInput) {
+        const match = url.match(/http:\/\/([^:]+)/);
+        if (match) customInput.value = match[1];
+      }
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      let rendered = false;
+      if (typeof QRCode !== 'undefined') {
+        try {
+          qrCodeInstance = new QRCode(container, {
+            text: url,
+            width: 180,
+            height: 180,
+            colorDark: '#0f172a',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+          });
+          rendered = true;
+        } catch (e) {
+          console.warn('QRCode JS library error, using image fallback:', e);
+        }
+      }
+
+      // 100% Reliable Image Fallback if canvas library not ready
+      if (!rendered || container.children.length === 0) {
+        const img = document.createElement('img');
+        img.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}`;
+        img.alt = '스마트폰 접속 QR 코드';
+        img.className = 'w-[180px] h-[180px] rounded-xl shadow-xs';
+        container.appendChild(img);
+      }
+    }
+
+    async function openMobileQrModal() {
+      const modal = document.getElementById('mobileQrModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      // 1. Render immediately with best known Wi-Fi IP
+      generateMobileQrCode(serverMobileUrl);
+
+      // 2. Fetch fresh Wi-Fi IP in background to ensure 100% accuracy
+      try {
+        const candidateUrls = [
+          `${getApiBaseUrl()}/api/info`,
+          'http://localhost:5500/api/info',
+          `http://${DEFAULT_WIFI_IP}:5500/api/info`
+        ];
+        for (const u of candidateUrls) {
+          try {
+            const res = await fetch(u, { cache: 'no-store' });
+            if (res.ok) {
+              const info = await res.json();
+              if (info.primaryIp && info.primaryIp !== '127.0.0.1') {
+                detectedIp = info.primaryIp;
+                serverMobileUrl = `http://${detectedIp}:5500`;
+                generateMobileQrCode(serverMobileUrl);
+                break;
+              }
+            }
+          } catch (_) {}
+        }
+      } catch (err) {
+        console.warn('Error refreshing IP info:', err);
+      }
+
+      lucide.createIcons();
+    }
+
+    function closeMobileQrModal() {
+      const modal = document.getElementById('mobileQrModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function copyMobileUrl() {
+      const url = document.getElementById('mobileUrlDisplay')?.textContent || serverMobileUrl;
+      navigator.clipboard.writeText(url).then(() => {
+        showToast('스마트폰 접속 주소가 복사되었습니다!');
+      }).catch(() => {
+        prompt('접속 주소를 복사하세요:', url);
+      });
+    }
+
+    function toggleIpEdit() {
+      const box = document.getElementById('customIpContainer');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    function applyCustomIp() {
+      const input = document.getElementById('customIpInput');
+      const ip = (input?.value || '').trim();
+      if (!ip) {
+        alert('IP 주소를 입력해주세요.');
+        return;
+      }
+      detectedIp = ip;
+      serverMobileUrl = `http://${ip}:5500`;
+      generateMobileQrCode(serverMobileUrl);
+      showToast(`접속 주소가 ${serverMobileUrl}로 변경되었습니다!`);
+    }
+
+    // -------------------------------------------------------------
+    // Toast Notification System
+    // -------------------------------------------------------------
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      const bgColors = type === 'success' ? 'bg-slate-900 text-white' : 'bg-rose-600 text-white';
+      const iconName = type === 'success' ? 'check-circle' : 'alert-circle';
+
+      toast.className = `${bgColors} px-4 py-3 rounded-2xl shadow-xl flex items-center space-x-2 text-xs sm:text-sm font-semibold pointer-events-auto transform transition-all duration-300 translate-y-2 opacity-0`;
+      toast.innerHTML = `
+        <i data-lucide="${iconName}" class="w-4 h-4 shrink-0"></i>
+        <span>${message}</span>
+      `;
+
+      container.appendChild(toast);
+      lucide.createIcons();
+
+      // Trigger animation
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 20);
+
+      // Auto dismiss
+      setTimeout(() => {
+        toast.classList.add('opacity-0', '-translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    }
+
+    // -------------------------------------------------------------
+    // Storage Operations
+    // -------------------------------------------------------------
+    function loadRecordsFromStorage() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        records = data ? JSON.parse(data) : [];
+      } catch (e) {
+        console.error('Failed to load records from localStorage', e);
+        records = [];
+      }
+    }
+
+    function saveRecordsToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      } catch (e) {
+        console.error('Failed to save records to localStorage', e);
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Date Management & Auto-load Form
+    // -------------------------------------------------------------
+    function getTodayString() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function setToday() {
+      const todayStr = getTodayString();
+      document.getElementById('recordDate').value = todayStr;
+      onDateChanged();
+    }
+
+    function changeDateByDays(delta) {
+      const curVal = document.getElementById('recordDate').value || getTodayString();
+      const d = new Date(curVal);
+      d.setDate(d.getDate() + delta);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      document.getElementById('recordDate').value = `${year}-${month}-${day}`;
+      onDateChanged();
+    }
+
+    function onDateChanged() {
+      const dateVal = document.getElementById('recordDate').value;
+      if (!dateVal) return;
+
+      const d = new Date(dateVal + 'T00:00:00');
+      const dayOfWeek = DAY_NAMES[d.getDay()];
+      document.getElementById('dayOfWeekBadge').textContent = dayOfWeek;
+
+      // Check if existing record exists for this date
+      const existing = records.find(r => r.date === dateVal);
+      if (existing) {
+        populateFormWithRecord(existing);
+      } else {
+        resetFormToDefaults();
+      }
+      lucide.createIcons();
+    }
+
+    // -------------------------------------------------------------
+    // Medicine Rows (Dynamic Multi-selection & Decimal Configuration)
+    // -------------------------------------------------------------
+    function renderMedChipsHTML(medType, currentDosage, rowId) {
+      const config = MED_PRESETS[medType] || MED_PRESETS['직접 입력'];
+      const chips = config.chips || [];
+      const cleanCur = (currentDosage || '').trim().toLowerCase().replace(/\s+/g, '');
+      const isAbilify = medType === '아빌리파이';
+      
+      const chipsHtml = chips.map(chip => {
+        const cleanChip = chip.toLowerCase().replace(/\s+/g, '');
+        const isActive = cleanCur === cleanChip;
+        const activeClass = isActive 
+          ? 'bg-blue-600 text-white border-blue-600 shadow-sm font-bold active-chip' 
+          : 'bg-white text-slate-600 border-slate-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 font-medium';
+        return `<button type="button" onclick="setMedDosage('${rowId}', '${chip}')" data-dosage="${chip}" class="med-chip-btn px-2 py-1 rounded-md text-[11px] border transition select-none cursor-pointer ${activeClass}">${chip}</button>`;
+      }).join('');
+
+      const labelIcon = isAbilify ? 'sparkles' : 'zap';
+      const labelText = isAbilify ? '소수점 빠른 선택' : config.label;
+      const stepHint = isAbilify 
+        ? '<span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100">±0.5mg 조절</span>' 
+        : '';
+
+      return `
+        <div class="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 w-full pt-0.5">
+          <span class="text-[11px] font-semibold text-slate-500 flex items-center gap-1 shrink-0">
+            <i data-lucide="${labelIcon}" class="w-3.5 h-3.5 text-blue-500"></i>
+            ${labelText}:
+          </span>
+          <div class="flex flex-wrap items-center gap-1 flex-1">
+            ${chipsHtml}
+          </div>
+          ${stepHint}
+        </div>
+      `;
+    }
+
+    function renderMedDatalistHTML(medType, rowId) {
+      const config = MED_PRESETS[medType] || MED_PRESETS['직접 입력'];
+      const datalistItems = config.datalist || config.chips || [];
+      return `
+        <datalist id="med-datalist-${rowId}">
+          ${datalistItems.map(item => `<option value="${item}"></option>`).join('')}
+        </datalist>
+      `;
+    }
+
+    function addMedicineRow(type = '메디키넷', dosage = null) {
+      const container = document.getElementById('medicineList');
+      const rowId = 'med-row-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
+      const isPreset = ['메디키넷', '콘서타', '아빌리파이'].includes(type);
+      const selectVal = isPreset ? type : '직접 입력';
+      const customVal = isPreset ? '' : type;
+
+      const config = MED_PRESETS[selectVal] || MED_PRESETS['직접 입력'];
+      const actualDosage = (dosage !== null && dosage !== undefined && dosage !== '') 
+        ? dosage 
+        : config.defaultDosage;
+
+      const rowDiv = document.createElement('div');
+      rowDiv.id = rowId;
+      rowDiv.className = 'medicine-row flex flex-col gap-2 bg-slate-50 p-3 rounded-xl border border-slate-200 transition-all hover:border-slate-300';
+
+      rowDiv.innerHTML = `
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
+          <div class="flex-1 min-w-[130px]">
+            <select class="med-type-select w-full bg-white border border-slate-200 text-slate-800 font-semibold text-xs sm:text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs" onchange="onMedSelectChange(this)">
+              <option value="메디키넷" ${selectVal === '메디키넷' ? 'selected' : ''}>💊 메디키넷</option>
+              <option value="콘서타" ${selectVal === '콘서타' ? 'selected' : ''}>💊 콘서타</option>
+              <option value="아빌리파이" ${selectVal === '아빌리파이' ? 'selected' : ''}>💊 아빌리파이</option>
+              <option value="직접 입력" ${selectVal === '직접 입력' ? 'selected' : ''}>✏️ 직접 입력</option>
+            </select>
+          </div>
+          <div class="med-custom-container flex-1 min-w-[110px] ${selectVal === '직접 입력' ? '' : 'hidden'}">
+            <input type="text" value="${customVal}" placeholder="약 이름 직접입력" class="med-custom-input w-full bg-white border border-slate-200 text-slate-800 text-xs sm:text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs" />
+          </div>
+          <div class="flex items-center space-x-1">
+            <button type="button" onclick="stepMedDosage('${rowId}', -1)" title="용량 감소" class="w-8 h-9 flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm shadow-xs transition select-none">
+              -
+            </button>
+            <input type="text" list="med-datalist-${rowId}" value="${actualDosage}" placeholder="${config.placeholder}" class="med-dosage-input w-28 sm:w-36 bg-white border border-slate-200 text-slate-800 text-xs sm:text-sm rounded-lg px-2.5 py-2 font-medium text-center focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs" oninput="onDosageInputChange('${rowId}')" />
+            <button type="button" onclick="stepMedDosage('${rowId}', 1)" title="용량 증가" class="w-8 h-9 flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold rounded-lg text-sm shadow-xs transition select-none">
+              +
+            </button>
+          </div>
+          <div id="datalist-container-${rowId}">
+            ${renderMedDatalistHTML(selectVal, rowId)}
+          </div>
+          <button type="button" onclick="removeMedicineRow('${rowId}')" title="이 약물 삭제" class="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition shrink-0">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div id="chips-container-${rowId}" class="med-preset-chips border-t border-slate-100 pt-2">
+          ${renderMedChipsHTML(selectVal, actualDosage, rowId)}
+        </div>
+      `;
+
+      container.appendChild(rowDiv);
+      lucide.createIcons();
+    }
+
+    function onMedSelectChange(selectElem) {
+      const row = selectElem.closest('.medicine-row');
+      const rowId = row.id;
+      const customDiv = row.querySelector('.med-custom-container');
+      const dosageInput = row.querySelector('.med-dosage-input');
+      const medType = selectElem.value;
+      const config = MED_PRESETS[medType] || MED_PRESETS['직접 입력'];
+
+      if (medType === '직접 입력') {
+        customDiv.classList.remove('hidden');
+        row.querySelector('.med-custom-input').focus();
+      } else {
+        customDiv.classList.add('hidden');
+      }
+
+      // Update placeholder
+      dosageInput.placeholder = config.placeholder;
+
+      // When switching drug preset, if dosage is currently a default from another drug, adjust to sensible default
+      const currentVal = dosageInput.value.trim();
+      if (!currentVal || currentVal === '10mg' || currentVal === '18mg' || currentVal === '1mg') {
+        dosageInput.value = config.defaultDosage;
+      }
+
+      // Update Datalist and Chips
+      const datalistContainer = document.getElementById(`datalist-container-${rowId}`);
+      if (datalistContainer) {
+        datalistContainer.innerHTML = renderMedDatalistHTML(medType, rowId);
+      }
+
+      const chipsContainer = document.getElementById(`chips-container-${rowId}`);
+      if (chipsContainer) {
+        chipsContainer.innerHTML = renderMedChipsHTML(medType, dosageInput.value, rowId);
+      }
+
+      lucide.createIcons();
+    }
+
+    function setMedDosage(rowId, dosage) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const dosageInput = row.querySelector('.med-dosage-input');
+      if (dosageInput) {
+        dosageInput.value = dosage;
+        updateActiveChip(row);
+      }
+    }
+
+    function onDosageInputChange(rowId) {
+      const row = document.getElementById(rowId);
+      if (row) updateActiveChip(row);
+    }
+
+    function updateActiveChip(row) {
+      if (!row) return;
+      const input = row.querySelector('.med-dosage-input');
+      const currentVal = (input.value || '').trim().toLowerCase().replace(/\s+/g, '');
+      const chips = row.querySelectorAll('.med-chip-btn');
+      
+      chips.forEach(chip => {
+        const chipVal = (chip.getAttribute('data-dosage') || '').toLowerCase().replace(/\s+/g, '');
+        if (chipVal === currentVal) {
+          chip.className = 'med-chip-btn px-2 py-1 rounded-md text-[11px] border transition select-none cursor-pointer bg-blue-600 text-white border-blue-600 shadow-sm font-bold active-chip';
+        } else {
+          chip.className = 'med-chip-btn px-2 py-1 rounded-md text-[11px] border transition select-none cursor-pointer bg-white text-slate-600 border-slate-200 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300 font-medium';
+        }
+      });
+    }
+
+    function stepMedDosage(rowId, direction) {
+      const row = document.getElementById(rowId);
+      if (!row) return;
+      const select = row.querySelector('.med-type-select');
+      const input = row.querySelector('.med-dosage-input');
+      const medType = select.value;
+      const config = MED_PRESETS[medType] || MED_PRESETS['직접 입력'];
+
+      let currentText = (input.value || '').trim();
+      const match = currentText.match(/^([\d.]+)\s*(.*)$/);
+      let num = match ? parseFloat(match[1]) : (parseFloat(config.defaultDosage) || 1);
+      let unit = (match && match[2]) ? match[2] : (config.unit || 'mg');
+
+      if (isNaN(num)) num = parseFloat(config.defaultDosage) || 1;
+
+      let step = config.step;
+      if (medType === '아빌리파이') {
+        step = 0.5; // 0.5mg decimal steps for Abilify
+      }
+
+      let newNum = num + direction * step;
+
+      // Precision calculation for decimals
+      if (step < 1) {
+        const decimals = (step.toString().split('.')[1] || '').length;
+        newNum = Math.round(newNum * Math.pow(10, decimals)) / Math.pow(10, decimals);
+      } else {
+        newNum = Math.round(newNum);
+      }
+
+      // Ensure positive non-zero value
+      if (newNum <= 0) {
+        newNum = step < 1 ? step : 1;
+      }
+
+      input.value = `${newNum}${unit}`;
+      updateActiveChip(row);
+    }
+
+    function removeMedicineRow(rowId) {
+      const rows = document.querySelectorAll('.medicine-row');
+      if (rows.length <= 1) {
+        alert('최소 1개의 투약 정보 행은 유지되어야 합니다.');
+        return;
+      }
+      const target = document.getElementById(rowId);
+      if (target) target.remove();
+    }
+
+    function getMedicinesFromForm() {
+      const rows = document.querySelectorAll('.medicine-row');
+      const meds = [];
+      rows.forEach(row => {
+        const select = row.querySelector('.med-type-select');
+        const customInput = row.querySelector('.med-custom-input');
+        const dosageInput = row.querySelector('.med-dosage-input');
+
+        let name = select.value;
+        if (name === '직접 입력') {
+          name = customInput.value.trim() || '직접입력 약';
+        }
+        let dosage = dosageInput.value.trim() || '';
+        // If user entered only a number like "0.5" or "1.25", attach "mg"
+        if (/^\d+(\.\d+)?$/.test(dosage)) {
+          dosage = `${dosage}mg`;
+        }
+        meds.push({ name, dosage });
+      });
+      return meds;
+    }
+
+    // -------------------------------------------------------------
+    // Physical Symptoms Tags Toggle
+    // -------------------------------------------------------------
+    function toggleSymptomTag(btn) {
+      btn.classList.toggle('active');
+    }
+
+    function getSelectedSymptoms() {
+      const activeBtns = document.querySelectorAll('#symptomTagsContainer .tag-btn.active');
+      const tags = Array.from(activeBtns).map(b => b.getAttribute('data-symptom'));
+      const custom = document.getElementById('customSymptom').value.trim();
+      if (custom) tags.push(custom);
+      return tags;
+    }
+
+    function setSelectedSymptoms(symptomsList = []) {
+      const allBtns = document.querySelectorAll('#symptomTagsContainer .tag-btn');
+      const customInput = document.getElementById('customSymptom');
+      const remaining = [];
+
+      allBtns.forEach(btn => {
+        const sym = btn.getAttribute('data-symptom');
+        if (symptomsList.includes(sym)) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      symptomsList.forEach(s => {
+        const isStandard = Array.from(allBtns).some(b => b.getAttribute('data-symptom') === s);
+        if (!isStandard) remaining.push(s);
+      });
+      customInput.value = remaining.join(', ');
+    }
+
+    // -------------------------------------------------------------
+    // Form Population & Reset
+    // -------------------------------------------------------------
+    function resetFormToDefaults() {
+      currentRecordId = null;
+      document.getElementById('recordStatusBadge').innerHTML = `
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>새 기록 작성 중</span>
+      `;
+      document.getElementById('recordStatusBadge').className = 'text-xs px-3 py-1.5 rounded-full font-semibold bg-emerald-400/20 text-emerald-100 border border-emerald-300/30 flex items-center space-x-1';
+      document.getElementById('saveBtnText').textContent = '기록 저장하기';
+      document.getElementById('deleteBtn').classList.add('hidden');
+
+      // Reset medicines list
+      document.getElementById('medicineList').innerHTML = '';
+      addMedicineRow('메디키넷', '10mg');
+
+      // Default values
+      document.getElementById('medTimePeriod').value = '오전';
+      document.getElementById('medTimeHour').value = '08';
+      document.getElementById('medTimeMinute').value = '30';
+      document.getElementById('medMealTiming').value = '식후 30분';
+      document.getElementById('medNote').value = '';
+
+      document.getElementById('wakePeriod').value = '오전';
+      document.getElementById('wakeHour').value = '07';
+      document.getElementById('wakeMinute').value = '30';
+
+      document.getElementById('sleepPeriod').value = '오후';
+      document.getElementById('sleepHour').value = '10';
+      document.getElementById('sleepMinute').value = '30';
+
+      document.getElementById('sleepLatency').value = '15분 이내 (원활)';
+      document.getElementById('sleepWaking').value = '없음 (숙면)';
+
+      document.getElementById('mealBreakfast').value = '정상';
+      document.getElementById('mealLunch').value = '정상';
+      document.getElementById('mealDinner').value = '정상';
+
+      document.getElementById('taskStartReaction').value = '스스로 시작';
+      document.getElementById('mathProblemCount').value = '20';
+      document.getElementById('mathTotalDuration').value = '30';
+      document.getElementById('mathFocusDuration').value = '20';
+      document.getElementById('distractionLevel').value = '적음';
+      document.getElementById('mathObservationMemo').value = '';
+
+      document.getElementById('overallMood').value = '평온';
+      document.getElementById('irritationFreq').value = '적음';
+      document.getElementById('reboundEffect').value = '없음';
+      document.getElementById('angerTrigger').value = '';
+
+      setSelectedSymptoms([]);
+      document.getElementById('specialMemo').value = '';
+    }
+
+    function populateFormWithRecord(record) {
+      currentRecordId = record.id || record.date;
+      document.getElementById('recordStatusBadge').innerHTML = `
+        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+        <span>기존 기록 수정 모드</span>
+      `;
+      document.getElementById('recordStatusBadge').className = 'text-xs px-3 py-1.5 rounded-full font-semibold bg-amber-400/20 text-amber-100 border border-amber-300/30 flex items-center space-x-1';
+      document.getElementById('saveBtnText').textContent = '수정 내용 저장';
+      document.getElementById('deleteBtn').classList.remove('hidden');
+
+      // Populate Medicines
+      const medContainer = document.getElementById('medicineList');
+      medContainer.innerHTML = '';
+      if (record.medicines && record.medicines.length > 0) {
+        record.medicines.forEach(m => addMedicineRow(m.name, m.dosage));
+      } else {
+        addMedicineRow('메디키넷', '10mg');
+      }
+
+      // Timing & condition
+      document.getElementById('medTimePeriod').value = record.medTimePeriod || '오전';
+      document.getElementById('medTimeHour').value = record.medTimeHour || '08';
+      document.getElementById('medTimeMinute').value = record.medTimeMinute || '30';
+      document.getElementById('medMealTiming').value = record.medMealTiming || '식후 30분';
+      document.getElementById('medNote').value = record.medNote || '';
+
+      // Sleep
+      document.getElementById('wakePeriod').value = record.wakePeriod || '오전';
+      document.getElementById('wakeHour').value = record.wakeHour || '07';
+      document.getElementById('wakeMinute').value = record.wakeMinute || '30';
+
+      document.getElementById('sleepPeriod').value = record.sleepPeriod || '오후';
+      document.getElementById('sleepHour').value = record.sleepHour || '10';
+      document.getElementById('sleepMinute').value = record.sleepMinute || '30';
+
+      document.getElementById('sleepLatency').value = record.sleepLatency || '15분 이내 (원활)';
+      document.getElementById('sleepWaking').value = record.sleepWaking || '없음 (숙면)';
+
+      // Meals
+      document.getElementById('mealBreakfast').value = record.mealBreakfast || '정상';
+      document.getElementById('mealLunch').value = record.mealLunch || '정상';
+      document.getElementById('mealDinner').value = record.mealDinner || '정상';
+
+      // Math Focus
+      document.getElementById('taskStartReaction').value = record.taskStartReaction || '스스로 시작';
+      document.getElementById('mathProblemCount').value = record.mathProblemCount !== undefined ? record.mathProblemCount : '20';
+      document.getElementById('mathTotalDuration').value = record.mathTotalDuration !== undefined ? record.mathTotalDuration : '30';
+      document.getElementById('mathFocusDuration').value = record.mathFocusDuration !== undefined ? record.mathFocusDuration : '20';
+      document.getElementById('distractionLevel').value = record.distractionLevel || '적음';
+      document.getElementById('mathObservationMemo').value = record.mathObservationMemo || '';
+
+      // Emotion
+      document.getElementById('overallMood').value = record.overallMood || '평온';
+      document.getElementById('irritationFreq').value = record.irritationFreq || '적음';
+      document.getElementById('reboundEffect').value = record.reboundEffect || '없음';
+      document.getElementById('angerTrigger').value = record.angerTrigger || '';
+
+      // Symptoms & Memo
+      setSelectedSymptoms(record.symptoms || []);
+      document.getElementById('specialMemo').value = record.specialMemo || '';
+    }
+
+    function resetForm() {
+      if (confirm('작성 중인 내용을 초기화하시겠습니까?')) {
+        resetFormToDefaults();
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Save / Delete Record (With Real-time Server Sync)
+    // -------------------------------------------------------------
+    async function saveRecord(event) {
+      if (event) event.preventDefault();
+
+      const dateVal = document.getElementById('recordDate').value;
+      if (!dateVal) {
+        alert('날짜를 지정해주세요.');
+        return;
+      }
+
+      const medicines = getMedicinesFromForm();
+      const symptoms = getSelectedSymptoms();
+
+      const recordObj = {
+        id: dateVal,
+        date: dateVal,
+        dayOfWeek: document.getElementById('dayOfWeekBadge').textContent,
+        medicines: medicines,
+        medTimePeriod: document.getElementById('medTimePeriod').value,
+        medTimeHour: document.getElementById('medTimeHour').value,
+        medTimeMinute: document.getElementById('medTimeMinute').value,
+        medMealTiming: document.getElementById('medMealTiming').value,
+        medNote: document.getElementById('medNote').value.trim(),
+
+        wakePeriod: document.getElementById('wakePeriod').value,
+        wakeHour: document.getElementById('wakeHour').value,
+        wakeMinute: document.getElementById('wakeMinute').value,
+        sleepPeriod: document.getElementById('sleepPeriod').value,
+        sleepHour: document.getElementById('sleepHour').value,
+        sleepMinute: document.getElementById('sleepMinute').value,
+        sleepLatency: document.getElementById('sleepLatency').value,
+        sleepWaking: document.getElementById('sleepWaking').value,
+
+        mealBreakfast: document.getElementById('mealBreakfast').value,
+        mealLunch: document.getElementById('mealLunch').value,
+        mealDinner: document.getElementById('mealDinner').value,
+
+        taskStartReaction: document.getElementById('taskStartReaction').value,
+        mathProblemCount: Number(document.getElementById('mathProblemCount').value) || 0,
+        mathTotalDuration: Number(document.getElementById('mathTotalDuration').value) || 0,
+        mathFocusDuration: Number(document.getElementById('mathFocusDuration').value) || 0,
+        distractionLevel: document.getElementById('distractionLevel').value,
+        mathObservationMemo: document.getElementById('mathObservationMemo').value.trim(),
+
+        overallMood: document.getElementById('overallMood').value,
+        irritationFreq: document.getElementById('irritationFreq').value,
+        reboundEffect: document.getElementById('reboundEffect').value,
+        angerTrigger: document.getElementById('angerTrigger').value.trim(),
+
+        symptoms: symptoms,
+        specialMemo: document.getElementById('specialMemo').value.trim(),
+        updatedAt: new Date().toISOString()
+      };
+
+      // Upsert into records array
+      const existingIdx = records.findIndex(r => r.date === dateVal);
+      if (existingIdx >= 0) {
+        records[existingIdx] = recordObj;
+      } else {
+        records.push(recordObj);
+      }
+
+      // Sort by date ascending
+      records.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // 1. Save to LocalStorage
+      saveRecordsToStorage();
+
+      // 2. Real-time sync to Server
+      if (isServerConnected) {
+        await syncRecordToServer(recordObj);
+      }
+
+      showToast(`[${dateVal}] 우현이의 관찰 기록이 저장되었습니다!`);
+      populateFormWithRecord(recordObj);
+      renderRecordsTable();
+      updateDashboardCharts();
+    }
+
+    async function deleteCurrentRecord() {
+      const dateVal = document.getElementById('recordDate').value;
+      if (!confirm(`[${dateVal}]의 관찰 기록을 정말 삭제하시겠습니까?`)) return;
+
+      records = records.filter(r => r.date !== dateVal);
+      saveRecordsToStorage();
+
+      if (isServerConnected) {
+        await deleteRecordFromServer(dateVal);
+      }
+
+      showToast(`[${dateVal}] 관찰 기록이 삭제되었습니다.`, 'error');
+      resetFormToDefaults();
+      renderRecordsTable();
+      updateDashboardCharts();
+    }
+
+    async function deleteRecordByDate(dateVal) {
+      if (!confirm(`[${dateVal}] 관찰 기록을 삭제하시겠습니까?`)) return;
+      records = records.filter(r => r.date !== dateVal);
+      saveRecordsToStorage();
+
+      if (isServerConnected) {
+        await deleteRecordFromServer(dateVal);
+      }
+
+      if (document.getElementById('recordDate').value === dateVal) {
+        resetFormToDefaults();
+      }
+
+      showToast(`[${dateVal}] 기록이 삭제되었습니다.`, 'error');
+      renderRecordsTable();
+      updateDashboardCharts();
+    }
+
+    function editRecordByDate(dateVal) {
+      document.getElementById('recordDate').value = dateVal;
+      onDateChanged();
+      switchTab('record');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // -------------------------------------------------------------
+    // Tab Navigation (Responsive PC + Mobile)
+    // -------------------------------------------------------------
+    function switchTab(tabName) {
+      // 1. Desktop Tab Buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+        btn.classList.add('text-slate-600');
+      });
+      const activeDesktopBtn = document.getElementById('tab-' + tabName);
+      if (activeDesktopBtn) {
+        activeDesktopBtn.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+        activeDesktopBtn.classList.remove('text-slate-600');
+      }
+
+      // 2. Mobile Bottom Navigation Buttons
+      document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+        btn.classList.remove('text-blue-600', 'font-bold');
+        btn.classList.add('text-slate-500', 'font-medium');
+      });
+      const activeMobileBtn = document.getElementById('mobile-tab-' + tabName);
+      if (activeMobileBtn) {
+        activeMobileBtn.classList.add('text-blue-600', 'font-bold');
+        activeMobileBtn.classList.remove('text-slate-500', 'font-medium');
+      }
+
+      // 3. Toggle Sections
+      ['record', 'dashboard', 'table'].forEach(s => {
+        const sec = document.getElementById('section-' + s);
+        if (sec) sec.classList.add('hidden');
+      });
+
+      const targetSec = document.getElementById('section-' + tabName);
+      if (targetSec) targetSec.classList.remove('hidden');
+
+      if (tabName === 'dashboard') {
+        setTimeout(updateDashboardCharts, 50);
+      } else if (tabName === 'table') {
+        renderRecordsTable();
+      }
+      lucide.createIcons();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // -------------------------------------------------------------
+    // Table & Mobile Cards Rendering
+    // -------------------------------------------------------------
+    function renderRecordsTable() {
+      const tbody = document.getElementById('recordsTableBody');
+      const mobileContainer = document.getElementById('mobileCardsContainer');
+      const emptyMsg = document.getElementById('emptyTableMessage');
+      
+      if (tbody) tbody.innerHTML = '';
+      if (mobileContainer) mobileContainer.innerHTML = '';
+
+      if (!records || records.length === 0) {
+        if (emptyMsg) emptyMsg.classList.remove('hidden');
+        return;
+      }
+      if (emptyMsg) emptyMsg.classList.add('hidden');
+
+      // Sort descending for table/cards view (latest first)
+      const sorted = [...records].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      sorted.forEach(r => {
+        // Format medicines badges
+        const medBadges = (r.medicines || []).map(m => 
+          `<span class="inline-block bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold px-2 py-0.5 rounded-md mr-1 mb-1">${m.name} ${m.dosage || ''}</span>`
+        ).join('') || '<span class="text-slate-400">-</span>';
+
+        // Mood & Rebound Badge
+        let moodColor = 'text-slate-600 bg-slate-100';
+        let moodEmoji = '😌';
+        if (r.overallMood === '밝음') { moodColor = 'text-emerald-700 bg-emerald-50 border border-emerald-200'; moodEmoji = '😊'; }
+        else if (r.overallMood === '평온') { moodColor = 'text-blue-700 bg-blue-50 border border-blue-200'; moodEmoji = '😌'; }
+        else if (r.overallMood === '불안') { moodColor = 'text-amber-700 bg-amber-50 border border-amber-200'; moodEmoji = '😟'; }
+        else if (r.overallMood === '가라앉음') { moodColor = 'text-indigo-700 bg-indigo-50 border border-indigo-200'; moodEmoji = '😢'; }
+
+        let reboundBadge = '';
+        let reboundMobileTag = '';
+        if (r.reboundEffect === '짜증 심함') {
+          reboundBadge = `<span class="block mt-1 text-[11px] text-rose-600 font-bold">⚠️ 리바운드 심함</span>`;
+          reboundMobileTag = `<span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-rose-100 text-rose-700 border border-rose-200">⚠️ 리바운드 심함</span>`;
+        } else if (r.reboundEffect === '보통') {
+          reboundBadge = `<span class="block mt-1 text-[11px] text-amber-600">리바운드 보통</span>`;
+          reboundMobileTag = `<span class="px-2 py-0.5 text-[10px] font-medium rounded-md bg-amber-100 text-amber-700">리바운드 보통</span>`;
+        }
+
+        // Symptoms
+        const symptomsStr = (r.symptoms && r.symptoms.length > 0)
+          ? r.symptoms.map(s => `<span class="inline-block bg-slate-100 text-slate-700 text-[11px] px-1.5 py-0.5 rounded mr-1 mb-0.5">${s}</span>`).join('')
+          : '<span class="text-slate-400 text-xs">없음</span>';
+
+        // 1. Desktop Table Row
+        if (tbody) {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50/80 transition';
+          tr.innerHTML = `
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="font-bold text-slate-900">${r.date}</div>
+              <div class="text-xs text-slate-500">${r.dayOfWeek || ''}</div>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex flex-wrap">${medBadges}</div>
+              <div class="text-[11px] text-slate-400">${r.medTimePeriod || '오전'} ${r.medTimeHour || ''}:${r.medTimeMinute || ''} (${r.medMealTiming || ''})</div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="text-xs">기상: ${r.wakePeriod || ''} ${r.wakeHour || ''}:${r.wakeMinute || ''}</div>
+              <div class="text-xs">취침: ${r.sleepPeriod || ''} ${r.sleepHour || ''}:${r.sleepMinute || ''}</div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-xs">
+              <div>조: <span class="font-semibold ${r.mealBreakfast === '정상' ? 'text-emerald-600' : 'text-amber-600'}">${r.mealBreakfast || '-'}</span></div>
+              <div>중: <span class="font-semibold ${r.mealLunch === '정상' ? 'text-emerald-600' : 'text-amber-600'}">${r.mealLunch || '-'}</span></div>
+              <div>석: <span class="font-semibold ${r.mealDinner === '정상' ? 'text-emerald-600' : 'text-amber-600'}">${r.mealDinner || '-'}</span></div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <div class="font-bold text-amber-600">${r.mathFocusDuration || 0}분 지속 몰입</div>
+              <div class="text-xs text-slate-500">${r.mathProblemCount || 0}문제 (${r.mathTotalDuration || 0}분 소요)</div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-block text-xs font-semibold px-2 py-0.5 rounded ${moodColor}">${r.overallMood || '평온'}</span>
+              ${reboundBadge}
+            </td>
+            <td class="px-4 py-3 max-w-xs">
+              <div class="flex flex-wrap">${symptomsStr}</div>
+              ${r.specialMemo ? `<div class="text-xs text-slate-500 truncate mt-1" title="${r.specialMemo}">💬 ${r.specialMemo}</div>` : ''}
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-center">
+              <div class="flex items-center justify-center space-x-1">
+                <button onclick="editRecordByDate('${r.date}')" title="수정" class="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition">
+                  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="deleteRecordByDate('${r.date}')" title="삭제" class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg transition">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        }
+
+        // 2. Mobile Responsive Card (md 미만 스마트폰 최적화 뷰)
+        if (mobileContainer) {
+          const card = document.createElement('div');
+          card.className = 'bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 shadow-xs space-y-3';
+          card.innerHTML = `
+            <div class="flex items-center justify-between pb-2 border-b border-slate-200/60">
+              <div class="flex items-center space-x-2">
+                <span class="font-bold text-slate-900 text-sm">${r.date}</span>
+                <span class="text-xs font-semibold text-slate-500 px-2 py-0.5 bg-white rounded-md border border-slate-200">${r.dayOfWeek || ''}</span>
+              </div>
+              <div class="flex items-center space-x-1">
+                <button onclick="editRecordByDate('${r.date}')" class="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition" title="수정">
+                  <i data-lucide="edit-2" class="w-3.5 h-3.5"></i>
+                </button>
+                <button onclick="deleteRecordByDate('${r.date}')" class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg transition" title="삭제">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Medicines & Mood -->
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center">${medBadges}</div>
+              <div class="flex items-center space-x-1">
+                <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-md ${moodColor}">
+                  ${moodEmoji} ${r.overallMood || '평온'}
+                </span>
+                ${reboundMobileTag}
+              </div>
+            </div>
+
+            <!-- Key Metrics Grid -->
+            <div class="grid grid-cols-2 gap-2 text-xs bg-white p-2.5 rounded-xl border border-slate-100">
+              <div>
+                <span class="text-slate-400 block text-[11px]">4시 수학 집중도</span>
+                <span class="font-bold text-amber-600">${r.mathFocusDuration || 0}분 몰입</span>
+                <span class="text-slate-500 text-[10px]">(${r.mathProblemCount || 0}문제 / ${r.mathTotalDuration || 0}분)</span>
+              </div>
+              <div>
+                <span class="text-slate-400 block text-[11px]">점심 식사 (피크)</span>
+                <span class="font-semibold ${r.mealLunch === '정상' ? 'text-emerald-600' : 'text-amber-600'}">${r.mealLunch || '-'}</span>
+              </div>
+            </div>
+
+            ${r.specialMemo ? `
+              <div class="text-xs text-slate-600 bg-white/70 p-2 rounded-lg border border-slate-100">
+                <span class="font-semibold text-slate-500 text-[11px] block">📝 특이사항:</span>
+                <p class="mt-0.5 text-slate-700 leading-relaxed">${r.specialMemo}</p>
+              </div>
+            ` : ''}
+          `;
+          mobileContainer.appendChild(card);
+        }
+      });
+
+      lucide.createIcons();
+    }
+
+    // -------------------------------------------------------------
+    // Dashboard & Chart.js Visualizations
+    // -------------------------------------------------------------
+    function updateDashboardCharts() {
+      if (!records || records.length === 0) return;
+
+      const periodVal = document.getElementById('chartPeriodFilter').value;
+      let filtered = [...records].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      if (periodVal !== 'all') {
+        const days = parseInt(periodVal);
+        filtered = filtered.slice(-days);
+      }
+
+      // Calculate KPIs
+      const totalDays = filtered.length;
+      if (totalDays > 0) {
+        const totalFocus = filtered.reduce((sum, r) => sum + (Number(r.mathFocusDuration) || 0), 0);
+        const totalProblems = filtered.reduce((sum, r) => sum + (Number(r.mathProblemCount) || 0), 0);
+        const normalLunchCount = filtered.filter(r => r.mealLunch === '정상').length;
+        const noReboundCount = filtered.filter(r => r.reboundEffect === '없음').length;
+
+        document.getElementById('kpiAvgFocus').textContent = (totalFocus / totalDays).toFixed(1);
+        document.getElementById('kpiAvgProblems').textContent = (totalProblems / totalDays).toFixed(1);
+        document.getElementById('kpiLunchRate').textContent = Math.round((normalLunchCount / totalDays) * 100) + '%';
+        document.getElementById('kpiNoReboundRate').textContent = Math.round((noReboundCount / totalDays) * 100) + '%';
+      }
+
+      const labels = filtered.map(r => r.date.slice(5)); // 'MM-DD'
+      const focusDurations = filtered.map(r => Number(r.mathFocusDuration) || 0);
+      const problemCounts = filtered.map(r => Number(r.mathProblemCount) || 0);
+
+      // Mood score mapping: 밝음:4, 평온:3, 불안:2, 가라앉음:1
+      const moodScores = filtered.map(r => {
+        if (r.overallMood === '밝음') return 4;
+        if (r.overallMood === '평온') return 3;
+        if (r.overallMood === '불안') return 2;
+        if (r.overallMood === '가라앉음') return 1;
+        return 3;
+      });
+
+      // Rebound score mapping: 없음:1, 보통:2, 짜증 심함:3
+      const reboundScores = filtered.map(r => {
+        if (r.reboundEffect === '짜증 심함') return 3;
+        if (r.reboundEffect === '보통') return 2;
+        return 1;
+      });
+
+      // 1. Focus & Problem Chart (Combo)
+      const ctxFocus = document.getElementById('focusChart').getContext('2d');
+      if (focusChartInstance) focusChartInstance.destroy();
+      focusChartInstance = new Chart(ctxFocus, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              type: 'line',
+              label: '지속 집중 시간 (분)',
+              data: focusDurations,
+              borderColor: '#f59e0b',
+              backgroundColor: 'rgba(245, 158, 11, 0.1)',
+              borderWidth: 3,
+              tension: 0.3,
+              fill: true,
+              yAxisID: 'y'
+            },
+            {
+              type: 'bar',
+              label: '푼 문제 수',
+              data: problemCounts,
+              backgroundColor: 'rgba(59, 130, 246, 0.65)',
+              borderRadius: 6,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: { display: true, text: '집중 시간 (분)' },
+              suggestedMin: 0
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              title: { display: true, text: '문제 수' },
+              suggestedMin: 0
+            }
+          }
+        }
+      });
+
+      // 2. Mood & Rebound Chart
+      const ctxMood = document.getElementById('moodChart').getContext('2d');
+      if (moodChartInstance) moodChartInstance.destroy();
+      moodChartInstance = new Chart(ctxMood, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '전반적 기분 (4:밝음 ~ 1:가라앉음)',
+              data: moodScores,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 2.5,
+              tension: 0.3,
+              pointRadius: 4
+            },
+            {
+              label: '저녁 리바운드 강도 (3:심함 ~ 1:없음)',
+              data: reboundScores,
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              borderWidth: 2.5,
+              borderDash: [5, 5],
+              tension: 0.3,
+              pointRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              min: 0,
+              max: 4.5,
+              ticks: {
+                stepSize: 1,
+                callback: function(v) {
+                  if (v === 4) return '😊 밝음';
+                  if (v === 3) return '😌 평온 / ⚠️심함';
+                  if (v === 2) return '😟 보통';
+                  if (v === 1) return '😢 가라앉음/없음';
+                  return '';
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // 3. Medicine Group Comparison
+      const medGroups = {};
+      filtered.forEach(r => {
+        const medKey = (r.medicines || []).map(m => `${m.name}(${m.dosage})`).join(' + ') || '미기록';
+        if (!medGroups[medKey]) {
+          medGroups[medKey] = { totalFocus: 0, count: 0 };
+        }
+        medGroups[medKey].totalFocus += (Number(r.mathFocusDuration) || 0);
+        medGroups[medKey].count += 1;
+      });
+
+      const medLabels = Object.keys(medGroups);
+      const medAvgs = medLabels.map(k => (medGroups[k].totalFocus / medGroups[k].count).toFixed(1));
+
+      const ctxMed = document.getElementById('medicationChart').getContext('2d');
+      if (medicationChartInstance) medicationChartInstance.destroy();
+      medicationChartInstance = new Chart(ctxMed, {
+        type: 'bar',
+        data: {
+          labels: medLabels,
+          datasets: [{
+            label: '평균 집중 시간 (분)',
+            data: medAvgs,
+            backgroundColor: [
+              'rgba(59, 130, 246, 0.7)',
+              'rgba(147, 51, 234, 0.7)',
+              'rgba(236, 72, 153, 0.7)',
+              'rgba(16, 185, 129, 0.7)'
+            ],
+            borderRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: '평균 집중 시간 (분)' }
+            }
+          }
+        }
+      });
+
+      // 4. Meal Distribution Chart
+      let breakfastCount = { '정상': 0, '70%': 0, '안먹음': 0 };
+      let lunchCount = { '정상': 0, '70%': 0, '안먹음': 0 };
+      let dinnerCount = { '정상': 0, '70%': 0, '안먹음': 0 };
+
+      filtered.forEach(r => {
+        if (r.mealBreakfast === '정상') breakfastCount['정상']++;
+        else if (r.mealBreakfast === '평소의 70%') breakfastCount['70%']++;
+        else breakfastCount['안먹음']++;
+
+        if (r.mealLunch === '정상') lunchCount['정상']++;
+        else if (r.mealLunch === '평소의 70%') lunchCount['70%']++;
+        else lunchCount['안먹음']++;
+
+        if (r.mealDinner === '정상') dinnerCount['정상']++;
+        else if (r.mealDinner === '평소의 70%') dinnerCount['70%']++;
+        else dinnerCount['안먹음']++;
+      });
+
+      const ctxMeal = document.getElementById('mealChart').getContext('2d');
+      if (mealChartInstance) mealChartInstance.destroy();
+      mealChartInstance = new Chart(ctxMeal, {
+        type: 'bar',
+        data: {
+          labels: ['아침 식사', '점심 식사 (약효 피크)', '저녁 식사'],
+          datasets: [
+            {
+              label: '정상 식사',
+              data: [breakfastCount['정상'], lunchCount['정상'], dinnerCount['정상']],
+              backgroundColor: '#10b981'
+            },
+            {
+              label: '평소의 70%',
+              data: [breakfastCount['70%'], lunchCount['70%'], dinnerCount['70%']],
+              backgroundColor: '#f59e0b'
+            },
+            {
+              label: '거의 안 먹음 (식욕저하)',
+              data: [breakfastCount['안먹음'], lunchCount['안먹음'], dinnerCount['안먹음']],
+              backgroundColor: '#ef4444'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { stacked: true },
+            y: { stacked: true, beginAtZero: true, title: { display: true, text: '일수 (일)' } }
+          }
+        }
+      });
+    }
+
+    // -------------------------------------------------------------
+    // Excel Export & Import using SheetJS
+    // -------------------------------------------------------------
+    function exportToExcel() {
+      if (!records || records.length === 0) {
+        alert('내보낼 관찰 기록 데이터가 없습니다.');
+        return;
+      }
+
+      const rows = records.map(r => {
+        const medSummary = (r.medicines || []).map(m => `${m.name}(${m.dosage || ''})`).join(', ');
+        const symptomSummary = (r.symptoms || []).join(', ');
+
+        return {
+          '날짜': r.date,
+          '요일': r.dayOfWeek || '',
+          '투약_약물및용량': medSummary,
+          '투약_시간': `${r.medTimePeriod || '오전'} ${r.medTimeHour || ''}:${r.medTimeMinute || ''}`,
+          '투약_조건': r.medMealTiming || '',
+          '투약_메모': r.medNote || '',
+          '수면_기상시간': `${r.wakePeriod || '오전'} ${r.wakeHour || ''}:${r.wakeMinute || ''}`,
+          '수면_취침시간': `${r.sleepPeriod || '오후'} ${r.sleepHour || ''}:${r.sleepMinute || ''}`,
+          '수면_입면소요시간': r.sleepLatency || '',
+          '수면_야간깸여부': r.sleepWaking || '',
+          '식사_아침': r.mealBreakfast || '',
+          '식사_점심': r.mealLunch || '',
+          '식사_저녁': r.mealDinner || '',
+          '오후4시테스트_과제반응': r.taskStartReaction || '',
+          '오후4시테스트_푼문제수': r.mathProblemCount || 0,
+          '오후4시테스트_소요시간(분)': r.mathTotalDuration || 0,
+          '오후4시테스트_지속집중시간(분)': r.mathFocusDuration || 0,
+          '오후4시테스트_주의분산': r.distractionLevel || '',
+          '오후4시테스트_메모': r.mathObservationMemo || '',
+          '감정_전반적기분': r.overallMood || '',
+          '감정_짜증빈도': r.irritationFreq || '',
+          '감정_분노유발상황': r.angerTrigger || '',
+          '저녁약효_리바운드': r.reboundEffect || '',
+          '신체증상': symptomSummary,
+          '특이사항및종합메모': r.specialMemo || ''
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, '우현이_일일관찰기록');
+
+      const colKeys = Object.keys(rows[0]);
+      worksheet['!cols'] = colKeys.map(k => ({ wch: Math.max(k.length * 2.5, 14) }));
+
+      const fileName = `우현이_일일관찰기록_${getTodayString()}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      if (file.name.endsWith('.json')) {
+        reader.onload = function(e) {
+          try {
+            const imported = JSON.parse(e.target.result);
+            if (Array.isArray(imported)) {
+              mergeImportedRecords(imported);
+            } else {
+              alert('올바른 JSON 데이터 형식이 아닙니다.');
+            }
+          } catch (err) {
+            alert('JSON 파일 읽기 실패: ' + err.message);
+          }
+        };
+        reader.readAsText(file);
+      } else {
+        reader.onload = function(e) {
+          try {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const jsonRows = XLSX.utils.sheet_to_json(worksheet);
+
+            const converted = jsonRows.map(row => {
+              const medStr = row['투약_약물및용량'] || row['약종류'] || '';
+              const meds = [];
+              if (medStr) {
+                const parts = medStr.split(',');
+                parts.forEach(p => {
+                  const match = p.match(/(.+?)\((.*?)\)/);
+                  if (match) {
+                    meds.push({ name: match[1].trim(), dosage: match[2].trim() });
+                  } else {
+                    meds.push({ name: p.trim(), dosage: '' });
+                  }
+                });
+              }
+
+              const symStr = row['신체증상'] || '';
+              const symptoms = symStr ? symStr.split(',').map(s => s.trim()) : [];
+
+              return {
+                id: row['날짜'],
+                date: row['날짜'],
+                dayOfWeek: row['요일'] || '',
+                medicines: meds.length > 0 ? meds : [{ name: '메디키넷', dosage: '10mg' }],
+                medTimePeriod: (row['투약_시간'] || '').startsWith('오후') ? '오후' : '오전',
+                medMealTiming: row['투약_조건'] || '식후 30분',
+                medNote: row['투약_메모'] || '',
+                wakePeriod: '오전',
+                wakeHour: '07',
+                wakeMinute: '30',
+                sleepPeriod: '오후',
+                sleepHour: '10',
+                sleepMinute: '30',
+                sleepLatency: row['수면_입면소요시간'] || '15분 이내 (원활)',
+                sleepWaking: row['수면_야간깸여부'] || '없음 (숙면)',
+                mealBreakfast: row['식사_아침'] || '정상',
+                mealLunch: row['식사_점심'] || '정상',
+                mealDinner: row['식사_저녁'] || '정상',
+                taskStartReaction: row['오후4시테스트_과제반응'] || '스스로 시작',
+                mathProblemCount: Number(row['오후4시테스트_푼문제수']) || 0,
+                mathTotalDuration: Number(row['오후4시테스트_소요시간(분)']) || 0,
+                mathFocusDuration: Number(row['오후4시테스트_지속집중시간(분)']) || 0,
+                distractionLevel: row['오후4시테스트_주의분산'] || '적음',
+                mathObservationMemo: row['오후4시테스트_메모'] || '',
+                overallMood: row['감정_전반적기분'] || '평온',
+                irritationFreq: row['감정_짜증빈도'] || '적음',
+                angerTrigger: row['감정_분노유발상황'] || '',
+                reboundEffect: row['저녁약효_리바운드'] || '없음',
+                symptoms: symptoms,
+                specialMemo: row['특이사항및종합메모'] || ''
+              };
+            });
+
+            mergeImportedRecords(converted);
+          } catch (err) {
+            alert('엑셀 파일 읽기 오류: ' + err.message);
+          }
+        };
+        reader.readAsArrayBuffer(file);
+      }
+      event.target.value = '';
+    }
+
+    async function mergeImportedRecords(importedList) {
+      if (!importedList || importedList.length === 0) {
+        alert('가져올 데이터가 없습니다.');
+        return;
+      }
+      let mergedCount = 0;
+      importedList.forEach(item => {
+        if (!item.date) return;
+        const idx = records.findIndex(r => r.date === item.date);
+        if (idx >= 0) {
+          records[idx] = { ...records[idx], ...item };
+        } else {
+          records.push(item);
+        }
+        mergedCount++;
+      });
+
+      records.sort((a, b) => new Date(a.date) - new Date(b.date));
+      saveRecordsToStorage();
+
+      if (isServerConnected) {
+        await importRecordsToServer(records);
+      }
+
+      showToast(`총 ${mergedCount}건의 관찰 기록을 성공적으로 불러왔습니다!`);
+      onDateChanged();
+      renderRecordsTable();
+      updateDashboardCharts();
+    }
+
+    async function clearAllData() {
+      if (confirm('모든 기록 데이터를 삭제하시겠습니까? (삭제 전 엑셀 다운로드를 권장합니다)')) {
+        records = [];
+        saveRecordsToStorage();
+        if (isServerConnected) {
+          await importRecordsToServer([]);
+        }
+        resetFormToDefaults();
+        renderRecordsTable();
+        updateDashboardCharts();
+        showToast('모든 데이터가 삭제되었습니다.', 'error');
+      }
+    }
+
+    // -------------------------------------------------------------
+    // Initial Sample Data Generator
+    // -------------------------------------------------------------
+    function initSampleDataset() {
+      const today = new Date();
+      const sampleDays = [
+        {
+          offset: -4,
+          meds: [{ name: '메디키넷', dosage: '10mg' }],
+          focus: 15,
+          problems: 15,
+          mood: '불안',
+          lunch: '평소의 70%',
+          rebound: '보통',
+          symptoms: ['눈 깜빡임'],
+          memo: '새 학기 첫 주라 다소 긴장한 모습. 4시 수학 문제 풀 때 초반 10분 후 집중 흐려짐.'
+        },
+        {
+          offset: -3,
+          meds: [{ name: '메디키넷', dosage: '10mg' }],
+          focus: 18,
+          problems: 18,
+          mood: '평온',
+          lunch: '정상',
+          rebound: '없음',
+          symptoms: [],
+          memo: '어제보다 차분하게 문제 풀이 진행함. 칭찬 많이 해줌.'
+        },
+        {
+          offset: -2,
+          meds: [{ name: '메디키넷', dosage: '10mg' }, { name: '아빌리파이', dosage: '0.5mg' }],
+          focus: 22,
+          problems: 20,
+          mood: '밝음',
+          lunch: '정상',
+          rebound: '없음',
+          symptoms: ['입 마름'],
+          memo: '메디키넷과 아빌리파이(0.5mg) 병용 시작. 주의 분산 횟수 확연히 줄어듦. 물 자주 마심.'
+        },
+        {
+          offset: -1,
+          meds: [{ name: '메디키넷', dosage: '10mg' }, { name: '아빌리파이', dosage: '0.5mg' }],
+          focus: 25,
+          problems: 24,
+          mood: '밝음',
+          lunch: '평소의 70%',
+          rebound: '없음',
+          symptoms: [],
+          memo: '오후 4시 수학 테스트에서 스스로 문제집을 펼치고 25분간 몰입함.'
+        },
+        {
+          offset: 0,
+          meds: [{ name: '메디키넷', dosage: '10mg' }, { name: '아빌리파이', dosage: '1mg' }],
+          focus: 28,
+          problems: 25,
+          mood: '밝음',
+          lunch: '정상',
+          rebound: '없음',
+          symptoms: [],
+          memo: '오늘 컨디션 매우 좋음. 동생과도 다투지 않고 잘 지냄.'
+        }
+      ];
+
+      records = sampleDays.map(item => {
+        const d = new Date(today);
+        d.setDate(d.getDate() + item.offset);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${y}-${m}-${day}`;
+
+        return {
+          id: dateStr,
+          date: dateStr,
+          dayOfWeek: DAY_NAMES[d.getDay()],
+          medicines: item.meds,
+          medTimePeriod: '오전',
+          medTimeHour: '08',
+          medTimeMinute: '30',
+          medMealTiming: '식후 30분',
+          medNote: '물과 함께 복용',
+          wakePeriod: '오전',
+          wakeHour: '07',
+          wakeMinute: '30',
+          sleepPeriod: '오후',
+          sleepHour: '10',
+          sleepMinute: '30',
+          sleepLatency: '15분 이내 (원활)',
+          sleepWaking: '없음 (숙면)',
+          mealBreakfast: '정상',
+          mealLunch: item.lunch,
+          mealDinner: '정상',
+          taskStartReaction: '스스로 시작',
+          mathProblemCount: item.problems,
+          mathTotalDuration: 30,
+          mathFocusDuration: item.focus,
+          distractionLevel: '적음',
+          mathObservationMemo: '문제 풀이 성취도 높음',
+          overallMood: item.mood,
+          irritationFreq: '적음',
+          reboundEffect: item.rebound,
+          angerTrigger: '',
+          symptoms: item.symptoms,
+          specialMemo: item.memo,
+          updatedAt: new Date().toISOString()
+        };
+      });
+
+      saveRecordsToStorage();
+      if (isServerConnected) {
+        importRecordsToServer(records);
+      }
+    }
+
+    async function loadSampleData() {
+      initSampleDataset();
+      showToast('샘플 관찰 데이터가 생성되었습니다!');
+      onDateChanged();
+      renderRecordsTable();
+      updateDashboardCharts();
+    }
+  </script>
+</body>
+</html>

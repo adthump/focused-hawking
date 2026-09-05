@@ -81,17 +81,37 @@
 
 ## 🤖 전용 에이전트 스킬 및 진료·분석·테스트 CLI 도구
 
-우현이의 장기 관찰 기록을 분석하고 시스템의 품질을 독립적으로 검증하기 위한 7대 전용 스킬이 탑재되어 있습니다.
+우현이의 장기 관찰 기록을 분석하고 시스템의 품질을 독립적으로 검증하며 지속적 컨텍스트를 학습하기 위한 **8대 전용 스킬**이 탑재되어 있습니다.
 
 | 스킬명 | 역할 | 실행 명령어 |
 | :--- | :--- | :--- |
+| **`context-learner`** | **지속적 학습/기억**: 개발 패턴, 버그 해결책, 병원 피드백 스마트 검색 & 자가 기록 | `node .agents/skills/context-learner/scripts/query_knowledge.js --keyword="아빌리파이"` |
 | **`woohyun-qa-guardian`** | **종합 품질보증(QA)**: SWUT 단위시험(19종) + SWIT 통합시험(11종) | `npm test` 또는 `npm run test:unit` |
 | **`woohyun-tracker`** | **핵심 개발(Dev)**: 웹앱 UI, 폼 컴포넌트, 차트 시각화 및 서버 API | `node .agents/skills/woohyun-tracker/scripts/run_harness.js` |
 | **`hospital-consultation-report`** | **의료 브리핑**: 소아정신과 전문의 상담 리포트 자동 생성 | `node .agents/skills/hospital-consultation-report/scripts/generate_doctor_report.js --days=14` |
 | **`medication-titration-analyzer`** | **약물 적정 분석**: 약물 변경/증량 전후 집중도·리바운드 비교 분석 | `node .agents/skills/medication-titration-analyzer/scripts/compare_titration.js` |
 | **`observation-data-guardian`** | **데이터 수호자**: 관찰 데이터 무결성 검증 및 타임스탬프 스냅샷 백업 | `node .agents/skills/observation-data-guardian/scripts/verify_and_backup.js` |
 | **`local-wifi-mobile-sync`** | **모바일/네트워크**: 로컬 모바일 접속 IP 확인 및 동기화 API 점검 | `node .agents/skills/local-wifi-mobile-sync/scripts/get_mobile_qr.js` |
-| **전체 스킬 자가 진단** | 7대 스킬 문법, 규격 및 실행 무결성 전수 검사 | `node .agents/scripts/validate_all_skills.js` |
+| **전체 스킬 자가 진단** | 8대 스킬 문법, 규격 및 실행 무결성 전수 검사 | `node .agents/scripts/validate_all_skills.js` |
+
+---
+
+## 📚 영속적 지식 베이스 (`knowledge/`) 및 컨텍스트 학습 체계
+
+프로젝트 루트의 [`knowledge/`](file:///Users/jae/Workspace/focused-hawking/knowledge/README.md) 폴더는 이전 개발 결정(ADR), 컴포넌트 구현 패턴, 트러블슈팅 지식, 그리고 병원 진료 피드백과 작업 이력을 영구 보존합니다.
+
+- **개발 컨텍스트 (`knowledge/dev/`)**: 시스템 아키텍처 결정, 폼/차트/엑셀/API 구현 패턴, 버그 해결 사례
+- **돌봄/의료 컨텍스트 (`knowledge/care/`)**: 전문의 상담 소견, 약물 복용 특이사항, 일일 관찰 노하우
+- **누적 작업 이력 (`knowledge/tasks/`)**: 날짜별 작업 요청, 처리 결과, 도출된 교훈 (최신 15~20건 유지)
+- **비대화 방지 롤링 아카이브 (`knowledge/archive/`)**: 장기화된 로그 자동 분리 보관
+
+```bash
+# 지식 검색 예시
+node .agents/skills/context-learner/scripts/query_knowledge.js --keyword="차트"
+
+# 새로운 지식 기록 예시
+node .agents/skills/context-learner/scripts/record_learning.js --category="tasks" --title="작업명" --content="내용"
+```
 
 ---
 

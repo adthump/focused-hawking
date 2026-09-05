@@ -106,6 +106,10 @@ const testCommands = [
   {
     name: 'woohyun-qa-guardian SWUT 단위시험 실행',
     cmd: 'node .agents/skills/woohyun-qa-guardian/scripts/run_swut.js'
+  },
+  {
+    name: 'context-learner 지식 검색 및 기록 dry-run',
+    cmd: 'node .agents/skills/context-learner/scripts/record_learning.js --dry-run'
   }
 ];
 
